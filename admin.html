@@ -1,42 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin – Edit NFC Profile</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Edit Profile</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; background: #f5f5f5; }
-    h1 { text-align: center; }
-    input, textarea { width: 100%; padding: 10px; margin: 8px 0; border-radius: 5px; border: 1px solid #ccc; }
-    button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    #message { margin-top: 15px; text-align: center; font-weight: bold; }
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f5f7fb;
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+      color: #333;
+    }
+    h2 {
+      text-align: center;
+      color: #222;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 15px;
+    }
+    textarea {
+      resize: vertical;
+    }
+    button {
+      width: 100%;
+      background-color: #007bff;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    #preview {
+      display: block;
+      margin: 10px auto;
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border: 2px solid #ddd;
+    }
+    .upload-help {
+      font-size: 13px;
+      margin-top: 3px;
+      text-align: center;
+    }
+    .upload-help a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    .upload-help a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
-
-  <h1>Edit NFC Profile</h1>
+  <h2>🛠 Edit Profile</h2>
 
   <label>Name:</label>
-  <input type="text" id="name">
+  <input type="text" id="name" />
 
   <label>Bio:</label>
   <textarea id="bio"></textarea>
 
   <label>Email:</label>
-  <input type="text" id="email">
+  <input type="email" id="email" />
 
   <label>Phone:</label>
-  <input type="text" id="phone">
+  <input type="text" id="phone" />
 
   <label>Instagram:</label>
-  <input type="text" id="instagram">
+  <input type="text" id="instagram" />
 
   <label>LinkedIn:</label>
-  <input type="text" id="linkedin">
+  <input type="text" id="linkedin" />
 
-  <button id="saveBtn">💾 Save Profile</button>
-  <p id="message"></p>
+  <label>Profile Photo:</label>
+  <input type="text" id="photo" placeholder="Paste direct image link here (e.g. https://i.imgur.com/abc123.jpg)" />
+  <div class="upload-help">
+    <p>📷 Upload your photo on 
+      <a href="https://imgur.com/upload" target="_blank">Imgur</a> or 
+      <a href="https://postimages.org" target="_blank">PostImages</a> 
+      and paste the link above.
+    </p>
+  </div>
+
+  <!-- Preview -->
+  <img id="preview" src="https://via.placeholder.com/100" alt="Preview" />
+
+  <button id="saveBtn">Save</button>
+  <p id="status"></p>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
@@ -54,8 +130,10 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    const docRef = doc(db, "profiles", "test123");
+
+    // Load current profile
     async function loadProfile() {
-      const docRef = doc(db, "profiles", "test123");
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
@@ -65,31 +143,33 @@
         document.getElementById("phone").value = data.phone || "";
         document.getElementById("instagram").value = data.instagram || "";
         document.getElementById("linkedin").value = data.linkedin || "";
-      } else {
-        document.getElementById("message").innerText = "⚠️ Profile not found!";
+        document.getElementById("photo").value = data.photo || "";
+        document.getElementById("preview").src = data.photo || "https://via.placeholder.com/100";
       }
     }
+    loadProfile();
 
+    // Live preview when typing/pasting image URL
+    document.getElementById("photo").addEventListener("input", () => {
+      const link = document.getElementById("photo").value.trim();
+      document.getElementById("preview").src = link || "https://via.placeholder.com/100";
+    });
+
+    // Save profile
     document.getElementById("saveBtn").addEventListener("click", async () => {
-      const profileData = {
+      const newData = {
         name: document.getElementById("name").value,
         bio: document.getElementById("bio").value,
         email: document.getElementById("email").value,
         phone: document.getElementById("phone").value,
         instagram: document.getElementById("instagram").value,
-        linkedin: document.getElementById("linkedin").value
+        linkedin: document.getElementById("linkedin").value,
+        photo: document.getElementById("photo").value
       };
 
-      try {
-        await setDoc(doc(db, "profiles", "test123"), profileData);
-        document.getElementById("message").innerText = "✅ Profile updated successfully!";
-      } catch (error) {
-        console.error("Error updating profile:", error);
-        document.getElementById("message").innerText = "❌ Error updating profile. Check console.";
-      }
+      await setDoc(docRef, newData);
+      document.getElementById("status").innerText = "✅ Profile updated successfully!";
     });
-
-    loadProfile();
   </script>
 </body>
 </html>
