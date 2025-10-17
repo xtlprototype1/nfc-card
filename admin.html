@@ -75,7 +75,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    // Your Firebase project configuration
+    // 🔹 Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyAV6UygRZ1ItG1ywxfpsWfsGSOpZD3ZFoE",
       authDomain: "nfc-ptyp1.firebaseapp.com",
@@ -85,37 +85,45 @@
       appId: "1:1014619306049:web:33bae58475464af792eec0"
     };
 
-    // Initialize Firebase and Firestore
+    // 🔹 Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const docRef = doc(db, "profiles", "test123");
     const statusEl = document.getElementById("status");
 
-    // Load existing data into form
+    // 🔸 Load existing profile
     async function loadProfile() {
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        document.getElementById("photo").value = data.photo || "";
-        document.getElementById("preview").src = data.photo || "https://placehold.co/100x100";
-        document.getElementById("name").value = data.name || "";
-        document.getElementById("bio").value = data.bio || "";
-        document.getElementById("email").value = data.email || "";
-        document.getElementById("phone").value = data.phone || "";
-        document.getElementById("instagram").value = data.instagram || "";
-        document.getElementById("linkedin").value = data.linkedin || "";
+      try {
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          document.getElementById("photo").value = data.photo || "";
+          document.getElementById("preview").src = data.photo || "https://placehold.co/100x100";
+          document.getElementById("name").value = data.name || "";
+          document.getElementById("bio").value = data.bio || "";
+          document.getElementById("email").value = data.email || "";
+          document.getElementById("phone").value = data.phone || "";
+          document.getElementById("instagram").value = data.instagram || "";
+          document.getElementById("linkedin").value = data.linkedin || "";
+        } else {
+          statusEl.innerText = "⚠️ No profile found. Fill details and click save.";
+        }
+      } catch (err) {
+        console.error("Error loading profile:", err);
+        statusEl.innerText = "❌ Error loading profile data.";
       }
     }
 
+    // Load when page opens
     loadProfile();
 
-    // Live preview for image URL
+    // 🔸 Preview image live
     document.getElementById("photo").addEventListener("input", () => {
       const url = document.getElementById("photo").value.trim();
       document.getElementById("preview").src = url || "https://placehold.co/100x100";
     });
 
-    // Save new data to Firestore
+    // 🔸 Save updates to Firestore
     document.getElementById("saveBtn").addEventListener("click", async () => {
       statusEl.innerText = "⏳ Saving...";
       const newData = {
@@ -127,9 +135,15 @@
         instagram: document.getElementById("instagram").value,
         linkedin: document.getElementById("linkedin").value
       };
-      await setDoc(docRef, newData);
-      statusEl.innerText = "✅ Profile updated successfully!";
-      setTimeout(() => { statusEl.innerText = ""; }, 3000);
+      try {
+        await setDoc(docRef, newData);
+        statusEl.innerText = "✅ Profile updated successfully!";
+        await loadProfile(); // refreshes the page data automatically
+        setTimeout(() => { statusEl.innerText = ""; }, 3000);
+      } catch (err) {
+        console.error("Error saving:", err);
+        statusEl.innerText = "❌ Failed to save profile.";
+      }
     });
   </script>
 </body>
