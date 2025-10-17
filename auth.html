@@ -3,20 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NFC Digital Card | Login</title>
-
-  <!-- Google Fonts -->
+  <title>Login / Signup</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg-color: #f9f7f3; /* soft ivory */
-      --card-color: #fffdfa; /* warm neutral */
-      --text-color: #2b2b2b;
-      --accent-color: #b59b6a; /* soft gold */
-      --muted-text: #7b7b7b;
-      --error-color: #b94c4c;
-      --success-color: #4e8a6d;
+      --bg-color: #f5f4f2;        /* Very light, warm neutral */
+      --card-bg: #ffffff;         /* Clean white */
+      --text-color: #2c2a29;       /* Dark charcoal for text */
+      --accent-color: #c1a17a;     /* Warm gold / tan accent, elegant */
+      --muted-text: #767471;       /* Gray with warmth */
+      --error-color: #be4f52;       /* Muted red for errors */
+      --success-color: #5b7d67;     /* Soft green for success */
+      --shadow: 0 8px 30px rgba(44, 42, 41, 0.05);
+      --radius: 14px;
+      --transition: all 0.25s ease;
     }
 
     * {
@@ -29,22 +30,22 @@
     body {
       background-color: var(--bg-color);
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       min-height: 100vh;
       padding: 20px;
     }
 
     .auth-container {
-      background: var(--card-color);
-      border-radius: 20px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
       width: 100%;
       max-width: 380px;
       padding: 40px 30px;
       text-align: center;
       position: relative;
-      animation: fadeInUp 0.6s ease;
+      animation: fadeInUp 0.5s ease;
     }
 
     @keyframes fadeInUp {
@@ -52,49 +53,42 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .leaf-logo {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      width: 26px;
-      height: 26px;
-    }
-
     h2 {
       margin-bottom: 25px;
       color: var(--text-color);
       font-weight: 500;
-      letter-spacing: 0.3px;
-      font-size: 1.4rem;
+      font-size: 1.35rem;
+      letter-spacing: 0.2px;
     }
 
     input {
       width: 100%;
       padding: 12px;
       margin: 8px 0;
-      border: 1px solid #e6e6e6;
-      border-radius: 10px;
-      background-color: #fefefe;
+      border: 1px solid #ddd8d2;
+      border-radius: var(--radius);
+      background-color: #fcfcfa;
       font-size: 14px;
       color: var(--text-color);
       outline: none;
-      transition: border-color 0.2s ease;
+      transition: border-color var(--transition);
     }
 
     input:focus {
       border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(193, 161, 122, 0.3);
     }
 
     button {
       width: 100%;
       padding: 12px;
+      margin-top: 10px;
       border: none;
-      border-radius: 10px;
+      border-radius: var(--radius);
       background-color: var(--accent-color);
-      color: white;
+      color: #ffffff;
       font-weight: 500;
       cursor: pointer;
-      margin-top: 10px;
       transition: transform 0.1s ease;
     }
 
@@ -104,15 +98,14 @@
 
     .link {
       margin-top: 18px;
-      display: block;
       color: var(--muted-text);
       font-size: 13px;
     }
 
     .link span {
       color: var(--accent-color);
-      cursor: pointer;
       text-decoration: underline;
+      cursor: pointer;
     }
 
     .message {
@@ -134,30 +127,13 @@
       color: var(--muted-text);
     }
 
-    @media (max-width: 480px) {
-      .auth-container {
-        padding: 30px 20px;
-        border-radius: 16px;
-      }
-
-      h2 {
-        font-size: 1.25rem;
-        margin-bottom: 20px;
-      }
-
-      button, input {
-        font-size: 13.5px;
-      }
-    }
   </style>
 </head>
+
 <body>
   <div class="auth-container">
-    <img src="data:image/svg+xml,%3Csvg fill='none' stroke='%23b59b6a' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 2C8.5 5.5 7 9 7 12c0 4 2 7 5 10 3-3 5-6 5-10 0-3-1.5-6.5-5-10z'/%3E%3C/svg%3E" class="leaf-logo" alt="Leaf Logo"/>
-
     <h2 id="form-title">Login</h2>
 
-    <!-- LOGIN -->
     <div id="login-form">
       <input type="email" id="login-email" placeholder="Email" required />
       <input type="password" id="login-password" placeholder="Password" required />
@@ -166,7 +142,6 @@
       <div class="message" id="login-message"></div>
     </div>
 
-    <!-- EMAIL STEP -->
     <div id="signup-email-form" style="display:none;">
       <input type="email" id="signup-email" placeholder="Enter your email" required />
       <button id="send-code-btn">Continue</button>
@@ -174,7 +149,6 @@
       <div class="link">Already have an account? <span id="back-login-1">Login</span></div>
     </div>
 
-    <!-- VERIFICATION -->
     <div id="verify-code-form" style="display:none;">
       <input type="text" id="verification-code" placeholder="Enter 6-digit code" maxlength="6" required />
       <button id="verify-btn">Verify</button>
@@ -183,7 +157,6 @@
       <div class="message" id="code-message"></div>
     </div>
 
-    <!-- PASSWORD -->
     <div id="password-setup-form" style="display:none;">
       <input type="password" id="password" placeholder="Password" required />
       <input type="password" id="confirm-password" placeholder="Confirm Password" required />
@@ -194,6 +167,7 @@
   </div>
 
   <script>
+    // logic stays same as before
     const loginForm = document.getElementById('login-form');
     const signupEmailForm = document.getElementById('signup-email-form');
     const verifyCodeForm = document.getElementById('verify-code-form');
@@ -206,7 +180,6 @@
     let timerInterval;
     let timeLeft = 60;
 
-    // Switch between forms
     document.getElementById('create-link').onclick = () => {
       loginForm.style.display = 'none';
       signupEmailForm.style.display = 'block';
@@ -222,7 +195,6 @@
       clearInterval(timerInterval);
     };
 
-    // Mock email verification
     document.getElementById('send-code-btn').onclick = () => {
       const email = document.getElementById('signup-email').value.trim();
       if (!email) return alert('Please enter a valid email.');
@@ -245,7 +217,6 @@
       timerInterval = setInterval(() => {
         timeLeft--;
         timerText.innerText = `Code expires in ${timeLeft}s`;
-
         if (timeLeft <= 0) {
           clearInterval(timerInterval);
           timerText.innerText = "Code expired.";
