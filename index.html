@@ -43,11 +43,11 @@
 
   <!-- Firebase SDKs -->
   <script type="module">
-    // Import Firebase SDK
+    // Import Firebase SDK (this is where the error might occur)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // Your Firebase configuration (use your own values!)
+    // Your Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAV6UygRZ1ItG1ywxfpsWfsGSOpZD3ZFoE",
       authDomain: "nfc-ptyp1.firebaseapp.com",
@@ -61,14 +61,35 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Load profile data
+    // Load profile data with error handling
     async function loadProfile() {
-      const docRef = doc(db, "profiles", "test123");
-      const docSnap = await getDoc(docRef);
+      try {
+        const docRef = doc(db, "profiles", "test123");
+        const docSnap = await getDoc(docRef);
 
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        document.getElementById("name").innerText = data.name;
-        document.getElementById("bio").innerText = data.bio;
-        document.getElementById("email").innerText = "📧 " + data.email;
-        document.getElementById("phone").innerText = "📞 " + data
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          document.getElementById("name").innerText = data.name || "Name not found";
+          document.getElementById("bio").innerText = data.bio || "Bio not found";
+          document.getElementById("email").innerText = "📧 " + (data.email || "Email not found");
+          document.getElementById("phone").innerText = "📞 " + (data.phone || "Phone not found");  // Fixed the incomplete line
+          // Add more fields if needed, e.g., Instagram and LinkedIn
+          document.getElementById("instagram").href = data.instagram || "#";
+          document.getElementById("instagram").innerText = data.instagram ? "Instagram" : "";
+          document.getElementById("linkedin").href = data.linkedin || "#";
+          document.getElementById("linkedin").innerText = data.linkedin ? "LinkedIn" : "";
+        } else {
+          console.error("No document found!");
+          document.getElementById("name").innerText = "Profile not found";
+        }
+      } catch (error) {
+        console.error("Error loading profile: ", error);  // This will log errors like network issues
+        document.getElementById("name").innerText = "Error loading data";
+      }
+    }
+
+    // Call the function when the page loads
+    window.addEventListener('load', loadProfile);
+  </script>
+</body>
+</html>
