@@ -1,67 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login / Signup</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NFC Card | Sign Up / Login</title>
   <style>
-    body { font-family:sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; background:#f5f5f5;}
-    .card { background:white; padding:30px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); width:320px; }
-    input { width:100%; padding:10px; margin:6px 0; border:1px solid #ccc; border-radius:6px;}
-    button { width:100%; padding:10px; border:none; background:#007bff; color:white; border-radius:6px; cursor:pointer;}
-    button:hover {background:#0056b3;}
-    p { text-align:center; cursor:pointer; color:#007bff;}
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #1e1e2f, #2d2d44);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      width: 320px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #00d4ff;
+    }
+
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    button {
+      width: 95%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #00d4ff;
+      color: #1e1e2f;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #02b3d4;
+    }
+
+    .note {
+      font-size: 12px;
+      color: #ccc;
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h2 id="form-title">Login</h2>
-    <input id="email" type="email" placeholder="Email" required>
-    <input id="password" type="password" placeholder="Password" required>
-    <button id="submitBtn">Login</button>
-    <p id="toggle">No account? Create one</p>
+  <div class="container">
+    <h2>Sign Up / Login</h2>
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <button id="signupBtn">Sign Up</button>
+    <button id="loginBtn">Login</button>
+    <p class="note">After login, you’ll be redirected to your Admin Page.</p>
   </div>
 
   <script type="module">
-    import { auth, db } from "./firebase-config.js";
-    import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } 
-      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    const submitBtn = document.getElementById("submitBtn");
-    const toggle = document.getElementById("toggle");
-    const formTitle = document.getElementById("form-title");
-
-    let isLogin = true;
-
-    toggle.addEventListener("click", () => {
-      isLogin = !isLogin;
-      formTitle.innerText = isLogin ? "Login" : "Create Account";
-      submitBtn.innerText = isLogin ? "Login" : "Sign Up";
-      toggle.innerText = isLogin ? "No account? Create one" : "Have an account? Login";
-    });
-
-    submitBtn.addEventListener("click", async () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      try {
-        if (isLogin) {
-          await signInWithEmailAndPassword(auth, email, password);
-        } else {
-          const userCred = await createUserWithEmailAndPassword(auth, email, password);
-          await setDoc(doc(db, "profiles", userCred.user.uid), {
-            email, name:"", bio:"", phone:"", instagram:"", linkedin:"", photo:""
-          });
-        }
-        window.location.href = "admin.html";
-      } catch (err) {
-        alert("Error: " + err.message);
-      }
-    });
-
-    onAuthStateChanged(auth, user => {
-      if (user) window.location.href = "admin.html";
-    });
-  </script>
-</body>
-</html>
+    // 🔹 Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAV6UygRZ1ItG1ywxfpsWfsGSOpZD3ZFoE",
+      authDomain: "nfc-ptyp1.firebaseapp.com",
+      projectId: "nfc-ptyp1",
+      storageBucket: "nfc-ptyp1.appspot.com",
+      messagingSenderId: "1014619306049",
+      appId: "1:1014619306049:web:33bae58475464af792eec0"
+    };
