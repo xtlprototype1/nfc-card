@@ -1,159 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Edit Profile – NFC Card</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile</title>
+  <script>
+    // 🔹 Replace this with your UploadCare public key
+    UPLOADCARE_PUBLIC_KEY = "demopublickey";
+  </script>
+  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f7f9fc;
-      padding: 30px;
-      text-align: center;
-    }
-    .card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      max-width: 400px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 8px;
-      margin: 6px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-    button {
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 10px 15px;
-      font-size: 16px;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 10px;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    #status {
-      margin-top: 10px;
-      font-weight: bold;
-      color: green;
-      transition: opacity 0.5s ease;
-    }
-    img {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      margin-bottom: 10px;
-      object-fit: cover;
-    }
+    body { font-family:sans-serif; background:#f7f7f7; padding:20px;}
+    .card { background:white; max-width:400px; margin:auto; padding:20px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+    input, textarea { width:100%; padding:10px; margin:6px 0; border:1px solid #ccc; border-radius:6px;}
+    button { width:100%; padding:10px; background:#007bff; color:white; border:none; border-radius:6px; cursor:pointer;}
+    #message { color:green; text-align:center; margin-top:10px;}
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>✏️ Edit Your NFC Profile</h2>
-    <img id="preview" src="https://placehold.co/100x100" alt="Preview" />
-    <input id="photo" type="text" placeholder="Profile photo URL" />
-    <input id="name" type="text" placeholder="Full Name" />
-    <textarea id="bio" placeholder="Short bio"></textarea>
-    <input id="email" type="email" placeholder="Email" />
-    <input id="phone" type="text" placeholder="Phone number" />
-    <input id="instagram" type="text" placeholder="Instagram URL" />
-    <input id="linkedin" type="text" placeholder="LinkedIn URL" />
-    <button id="saveBtn">Save Changes</button>
-    <div id="status"></div>
+    <h2>Edit Profile</h2>
+    <input id="name" placeholder="Full Name">
+    <textarea id="bio" placeholder="Bio"></textarea>
+    <input id="phone" placeholder="Phone">
+    <input id="instagram" placeholder="Instagram URL">
+    <input id="linkedin" placeholder="LinkedIn URL">
+    <input type="hidden" role="uploadcare-uploader" id="uploader" data-clearable>
+    <button id="saveBtn">Save Profile</button>
+    <button id="logoutBtn" style="background:#dc3545;margin-top:6px;">Logout</button>
+    <div id="message"></div>
   </div>
 
-  <!-- Firebase SDK -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { auth, db } from "./firebase-config.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // 🔹 Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyAV6UygRZ1ItG1ywxfpsWfsGSOpZD3ZFoE",
-      authDomain: "nfc-ptyp1.firebaseapp.com",
-      projectId: "nfc-ptyp1",
-      storageBucket: "nfc-ptyp1.appspot.com",
-      messagingSenderId: "1014619306049",
-      appId: "1:1014619306049:web:33bae58475464af792eec0"
-    };
+    let currentUser;
+    const message = document.getElementById("message");
+    const widget = uploadcare.SingleWidget('[role=uploadcare-uploader]');
+    let photoURL = "";
 
-    // 🔹 Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const docRef = doc(db, "profiles", "test123");
-    const statusEl = document.getElementById("status");
-
-    // 🔸 Load existing profile
-    async function loadProfile() {
-      try {
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          document.getElementById("photo").value = data.photo || "";
-          document.getElementById("preview").src = data.photo || "https://placehold.co/100x100";
-          document.getElementById("name").value = data.name || "";
-          document.getElementById("bio").value = data.bio || "";
-          document.getElementById("email").value = data.email || "";
-          document.getElementById("phone").value = data.phone || "";
-          document.getElementById("instagram").value = data.instagram || "";
-          document.getElementById("linkedin").value = data.linkedin || "";
-        } else {
-          statusEl.innerText = "⚠️ No profile found. Fill details and click save.";
-        }
-      } catch (err) {
-        console.error("Error loading profile:", err);
-        statusEl.innerText = "❌ Error loading profile data.";
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = "auth.html";
+      currentUser = user;
+      const docRef = doc(db, "profiles", user.uid);
+      const snap = await getDoc(docRef);
+      if (snap.exists()) {
+        const data = snap.data();
+        document.getElementById("name").value = data.name || "";
+        document.getElementById("bio").value = data.bio || "";
+        document.getElementById("phone").value = data.phone || "";
+        document.getElementById("instagram").value = data.instagram || "";
+        document.getElementById("linkedin").value = data.linkedin || "";
+        photoURL = data.photo || "";
       }
-    }
-
-    // Load when page opens
-    loadProfile();
-
-    // 🔸 Preview image live
-    document.getElementById("photo").addEventListener("input", () => {
-      const url = document.getElementById("photo").value.trim();
-      document.getElementById("preview").src = url || "https://placehold.co/100x100";
     });
 
-    // 🔸 Save updates to Firestore
+    widget.onUploadComplete(info => { photoURL = info.cdnUrl; });
+
     document.getElementById("saveBtn").addEventListener("click", async () => {
-      statusEl.innerText = "⏳ Saving...";
-      statusEl.style.color = "black";
-      const newData = {
-        photo: document.getElementById("photo").value,
+      const docRef = doc(db, "profiles", currentUser.uid);
+      await updateDoc(docRef, {
         name: document.getElementById("name").value,
         bio: document.getElementById("bio").value,
-        email: document.getElementById("email").value,
         phone: document.getElementById("phone").value,
         instagram: document.getElementById("instagram").value,
-        linkedin: document.getElementById("linkedin").value
-      };
-      try {
-        await setDoc(docRef, newData);
-        statusEl.innerText = "✅ Profile updated successfully!";
-        statusEl.style.color = "green";
-        await loadProfile(); // refreshes the form
-        setTimeout(() => { 
-          statusEl.style.opacity = "0";
-          setTimeout(() => {
-            statusEl.innerText = "";
-            statusEl.style.opacity = "1";
-          }, 500);
-        }, 3000);
-      } catch (err) {
-        console.error("Error saving:", err);
-        statusEl.innerText = "❌ Failed to save profile.";
-        statusEl.style.color = "red";
-      }
+        linkedin: document.getElementById("linkedin").value,
+        photo: photoURL
+      });
+      message.innerText = "✅ Profile updated successfully!";
+      setTimeout(()=> message.innerText="", 2500);
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", async ()=> {
+      await signOut(auth);
+      window.location.href = "auth.html";
     });
   </script>
 </body>
