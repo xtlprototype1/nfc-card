@@ -41,9 +41,8 @@
     <a id="linkedin" href="#" target="_blank"></a>
   </div>
 
-  <!-- Firebase SDKs -->
   <script type="module">
-    // Import Firebase SDK (this is where the error might occur)
+    // Import Firebase SDKs
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -61,29 +60,46 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Load profile data with error handling
+    // Load profile data
     async function loadProfile() {
       try {
-        const docRef = doc(db, "profiles", "test123");
+        const docRef = doc(db, "profiles", "test123"); // Firestore document ID
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
           const data = docSnap.data();
+
+          // Fill the fields
           document.getElementById("name").innerText = data.name || "Name not found";
-          document.getElementById("bio").innerText = data.bio || "Bio not found";
-          document.getElementById("email").innerText = "📧 " + (data.email || "Email not found");
-          document.getElementById("phone").innerText = "📞 " + (data.phone || "Phone not found");  // Fixed the incomplete line
-          // Add more fields if needed, e.g., Instagram and LinkedIn
+          document.getElementById("bio").innerText = data.bio || "";
+          document.getElementById("email").innerText = data.email ? "📧 " + data.email : "";
+          document.getElementById("phone").innerText = data.phone ? "📞 " + data.phone : "";
           document.getElementById("instagram").href = data.instagram || "#";
           document.getElementById("instagram").innerText = data.instagram ? "Instagram" : "";
           document.getElementById("linkedin").href = data.linkedin || "#";
           document.getElementById("linkedin").innerText = data.linkedin ? "LinkedIn" : "";
+
+          // ✅ Fix photo loading
+          const photoEl = document.getElementById("photo");
+          if (data.photoURL && data.photoURL.startsWith("http")) {
+            photoEl.src = data.photoURL;
+          } else {
+            photoEl.src = "https://via.placeholder.com/100"; // Fallback
+          }
+
+          console.log("✅ Profile loaded:", data);
         } else {
-          console.error("No document found!");
+          console.error("❌ No document found in Firestore!");
           document.getElementById("name").innerText = "Profile not found";
         }
       } catch (error) {
-        console.error("Error loading profile: ", error);  // This will log errors like network issues
+        console.error("⚠️ Error loading profile:", error);
         document.getElementById("name").innerText = "Error loading data";
       }
     }
+
+    // Run when page loads
+    loadProfile();
+  </script>
+</body>
+</html>
