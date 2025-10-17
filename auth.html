@@ -1,265 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NFC Business Card – Sign In</title>
-<style>
-  :root {
-    --bg: #f7f5f0;
-    --card: #fffaf4;
-    --accent: #c9a46a;
-    --accent-dark: #a88652;
-    --text: #3e3e3e;
-    --error: #d9534f;
-  }
-  body {
-    margin: 0;
-    height: 100vh;
-    background: var(--bg);
-    font-family: "Poppins", sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text);
-  }
-  .card {
-    width: 360px;
-    background: var(--card);
-    border-radius: 18px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    padding: 2rem;
-    transition: all 0.3s ease;
-  }
-  h2 {
-    margin-top: 0;
-    text-align: center;
-    font-weight: 500;
-    color: var(--accent-dark);
-  }
-  .input-group {
-    margin-bottom: 1.2rem;
-  }
-  input {
-    width: 100%;
-    padding: 0.8rem;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    background: #fff;
-    font-size: 0.95rem;
-    box-sizing: border-box;
-  }
-  input:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 1px var(--accent);
-  }
-  button {
-    width: 100%;
-    padding: 0.9rem;
-    border: none;
-    border-radius: 8px;
-    background: var(--accent);
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: opacity 0.2s ease;
-  }
-  button:hover {
-    opacity: 0.85; /* no color change */
-  }
-  .link {
-    text-align: center;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-  }
-  .link a {
-    color: var(--accent-dark);
-    text-decoration: none;
-  }
-  .link a:hover {
-    text-decoration: underline;
-  }
-  .hidden { display: none; }
-  .timer {
-    text-align: center;
-    margin-top: 0.5rem;
-    font-size: 0.85rem;
-    color: #999;
-  }
-  .error {
-    color: var(--error);
-    font-size: 0.85rem;
-    margin-bottom: 0.5rem;
-    text-align: center;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NFC Digital Card | Login</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-color: #f9f7f3; /* soft ivory */
+      --card-color: #fffdfa; /* warm neutral */
+      --text-color: #2b2b2b;
+      --accent-color: #b59b6a; /* soft gold */
+      --muted-text: #7b7b7b;
+      --error-color: #b94c4c;
+      --success-color: #4e8a6d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .auth-container {
+      background: var(--card-color);
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+      width: 360px;
+      padding: 40px 30px;
+      text-align: center;
+      position: relative;
+      animation: fadeInUp 0.6s ease;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .leaf-logo {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 28px;
+      height: 28px;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      color: var(--text-color);
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #e6e6e6;
+      border-radius: 10px;
+      background-color: #fefefe;
+      font-size: 14px;
+      color: var(--text-color);
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    input:focus {
+      border-color: var(--accent-color);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background-color: var(--accent-color);
+      color: white;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: transform 0.1s ease;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .link {
+      margin-top: 18px;
+      display: block;
+      color: var(--muted-text);
+      font-size: 13px;
+    }
+
+    .link span {
+      color: var(--accent-color);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .message {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .error {
+      color: var(--error-color);
+    }
+
+    .success {
+      color: var(--success-color);
+    }
+
+    .timer {
+      font-size: 13px;
+      margin-top: 5px;
+      color: var(--muted-text);
+    }
+
+  </style>
 </head>
 <body>
-  <div class="card">
-    <h2 id="formTitle">Login</h2>
+  <div class="auth-container">
+    <img src="data:image/svg+xml,%3Csvg fill='none' stroke='%23b59b6a' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 2C8.5 5.5 7 9 7 12c0 4 2 7 5 10 3-3 5-6 5-10 0-3-1.5-6.5-5-10z'/%3E%3C/svg%3E" class="leaf-logo" alt="Leaf Logo"/>
 
-    <div id="loginForm">
-      <div class="input-group">
-        <input type="email" id="loginEmail" placeholder="Email" required />
-      </div>
-      <div class="input-group">
-        <input type="password" id="loginPassword" placeholder="Password" required />
-      </div>
-      <div class="error" id="loginError"></div>
-      <button id="loginBtn">Login</button>
-      <div class="link">Don’t have an account? <a href="#" id="createLink">Create one</a></div>
+    <h2 id="form-title">Login</h2>
+
+    <div id="login-form">
+      <input type="email" id="login-email" placeholder="Email" required />
+      <input type="password" id="login-password" placeholder="Password" required />
+      <button id="login-btn">Login</button>
+      <div class="link">Don’t have an account? <span id="create-link">Create one</span></div>
+      <div class="message" id="login-message"></div>
     </div>
 
-    <div id="signupStep1" class="hidden">
-      <div class="input-group">
-        <input type="email" id="signupEmail" placeholder="Enter your email" required />
-      </div>
-      <div class="error" id="emailError"></div>
-      <button id="continueBtn">Continue</button>
-      <div class="link"><a href="#" id="backToLogin1">Back to login</a></div>
+    <div id="signup-email-form" style="display:none;">
+      <input type="email" id="signup-email" placeholder="Enter your email" required />
+      <button id="send-code-btn">Continue</button>
+      <div class="message" id="email-message"></div>
+      <div class="link">Already have an account? <span id="back-login-1">Login</span></div>
     </div>
 
-    <div id="signupStep2" class="hidden">
-      <div class="input-group">
-        <input type="text" id="verifyCode" placeholder="Enter verification code" maxlength="6" />
-      </div>
-      <div class="error" id="codeError"></div>
-      <button id="verifyBtn">Verify</button>
-      <div class="timer" id="timer">01:00</div>
-      <div class="link hidden" id="resendContainer">
-        <a href="#" id="resendCode">Resend code</a>
-      </div>
+    <div id="verify-code-form" style="display:none;">
+      <input type="text" id="verification-code" placeholder="Enter 6-digit code" maxlength="6" required />
+      <button id="verify-btn">Verify</button>
+      <div class="timer" id="timer-text">Code expires in 60s</div>
+      <button id="resend-btn" style="margin-top:8px; opacity:0.5; cursor:not-allowed;" disabled>Resend Code</button>
+      <div class="message" id="code-message"></div>
     </div>
 
-    <div id="signupStep3" class="hidden">
-      <div class="input-group">
-        <input type="password" id="password" placeholder="Password" />
-      </div>
-      <div class="input-group">
-        <input type="password" id="confirmPassword" placeholder="Confirm Password" />
-      </div>
-      <div class="error" id="passwordError"></div>
-      <button id="createAccountBtn">Create Account</button>
-      <div class="link"><a href="#" id="backToLogin2">Back to login</a></div>
+    <div id="password-setup-form" style="display:none;">
+      <input type="password" id="password" placeholder="Password" required />
+      <input type="password" id="confirm-password" placeholder="Confirm Password" required />
+      <button id="create-account-btn">Create Account</button>
+      <div class="message" id="password-message"></div>
+      <div class="link">Back to <span id="back-login-2">Login</span></div>
     </div>
   </div>
 
-<script>
-  const loginForm = document.getElementById("loginForm");
-  const signup1 = document.getElementById("signupStep1");
-  const signup2 = document.getElementById("signupStep2");
-  const signup3 = document.getElementById("signupStep3");
-  const formTitle = document.getElementById("formTitle");
+  <script>
+    // DOM Elements
+    const loginForm = document.getElementById('login-form');
+    const signupEmailForm = document.getElementById('signup-email-form');
+    const verifyCodeForm = document.getElementById('verify-code-form');
+    const passwordSetupForm = document.getElementById('password-setup-form');
+    const formTitle = document.getElementById('form-title');
+    const resendBtn = document.getElementById('resend-btn');
+    const timerText = document.getElementById('timer-text');
 
-  const createLink = document.getElementById("createLink");
-  const backToLogin1 = document.getElementById("backToLogin1");
-  const backToLogin2 = document.getElementById("backToLogin2");
+    let generatedCode = null;
+    let timerInterval;
+    let timeLeft = 60;
 
-  const continueBtn = document.getElementById("continueBtn");
-  const verifyBtn = document.getElementById("verifyBtn");
-  const createAccountBtn = document.getElementById("createAccountBtn");
+    // Show forms
+    document.getElementById('create-link').onclick = () => {
+      loginForm.style.display = 'none';
+      signupEmailForm.style.display = 'block';
+      formTitle.innerText = 'Create Account';
+    };
 
-  const emailInput = document.getElementById("signupEmail");
-  const emailError = document.getElementById("emailError");
-  const codeError = document.getElementById("codeError");
-  const passwordError = document.getElementById("passwordError");
+    document.getElementById('back-login-1').onclick = document.getElementById('back-login-2').onclick = () => {
+      signupEmailForm.style.display = 'none';
+      verifyCodeForm.style.display = 'none';
+      passwordSetupForm.style.display = 'none';
+      loginForm.style.display = 'block';
+      formTitle.innerText = 'Login';
+      clearInterval(timerInterval);
+    };
 
-  const timerDisplay = document.getElementById("timer");
-  const resendContainer = document.getElementById("resendContainer");
-  const resendCodeBtn = document.getElementById("resendCode");
+    // Mock email verification
+    document.getElementById('send-code-btn').onclick = () => {
+      const email = document.getElementById('signup-email').value.trim();
+      if (!email) return alert('Please enter a valid email.');
 
-  let generatedCode = "";
-  let timer;
-  let timeLeft = 60;
+      generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+      console.log("Verification code:", generatedCode); // For demo
+      signupEmailForm.style.display = 'none';
+      verifyCodeForm.style.display = 'block';
+      formTitle.innerText = 'Verify Email';
+      startTimer();
+    };
 
-  function switchTo(view) {
-    [loginForm, signup1, signup2, signup3].forEach(el => el.classList.add("hidden"));
-    view.classList.remove("hidden");
-  }
+    // Timer logic
+    function startTimer() {
+      timeLeft = 60;
+      resendBtn.disabled = true;
+      resendBtn.style.opacity = '0.5';
+      resendBtn.style.cursor = 'not-allowed';
+      timerText.innerText = `Code expires in ${timeLeft}s`;
 
-  createLink.onclick = () => {
-    switchTo(signup1);
-    formTitle.textContent = "Create Account";
-  };
-  backToLogin1.onclick = backToLogin2.onclick = () => {
-    switchTo(loginForm);
-    formTitle.textContent = "Login";
-  };
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerText.innerText = `Code expires in ${timeLeft}s`;
 
-  continueBtn.onclick = () => {
-    const email = emailInput.value.trim();
-    if (!validateEmail(email)) {
-      emailError.textContent = "Please enter a valid email address.";
-      return;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          timerText.innerText = "Code expired.";
+          resendBtn.disabled = false;
+          resendBtn.style.opacity = '1';
+          resendBtn.style.cursor = 'pointer';
+        }
+      }, 1000);
     }
-    emailError.textContent = "";
-    sendVerificationCode(email);
-    switchTo(signup2);
-    formTitle.textContent = "Verify Email";
-  };
 
-  verifyBtn.onclick = () => {
-    const code = document.getElementById("verifyCode").value.trim();
-    if (code === generatedCode && code !== "") {
-      clearInterval(timer);
-      timerDisplay.textContent = "";
-      resendContainer.classList.add("hidden");
-      codeError.textContent = "";
-      switchTo(signup3);
-      formTitle.textContent = "Set Password";
-    } else {
-      codeError.textContent = "Invalid or expired verification code.";
-    }
-  };
+    resendBtn.onclick = () => {
+      if (!resendBtn.disabled) {
+        generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+        console.log("Resent new code:", generatedCode);
+        startTimer();
+      }
+    };
 
-  createAccountBtn.onclick = () => {
-    const pass = document.getElementById("password").value;
-    const confirm = document.getElementById("confirmPassword").value;
-    if (pass.length < 8) {
-      passwordError.textContent = "Password must be at least 8 characters.";
-      return;
-    }
-    if (pass !== confirm) {
-      passwordError.textContent = "Passwords do not match.";
-      return;
-    }
-    passwordError.textContent = "";
-    alert("✅ Account created successfully!\nRedirecting to login...");
-    switchTo(loginForm);
-    formTitle.textContent = "Login";
-  };
-
-  function sendVerificationCode(email) {
-    generatedCode = String(Math.floor(100000 + Math.random() * 900000));
-    console.log("Verification code sent to", email, ":", generatedCode);
-    timeLeft = 60;
-    resendContainer.classList.add("hidden");
-    updateTimer();
-    timer = setInterval(updateTimer, 1000);
-  }
-
-  function updateTimer() {
-    const mins = String(Math.floor(timeLeft / 60)).padStart(2, "0");
-    const secs = String(timeLeft % 60).padStart(2, "0");
-    timerDisplay.textContent = `${mins}:${secs}`;
-    if (timeLeft <= 0) {
-      clearInterval(timer);
-      timerDisplay.textContent = "Code expired.";
-      resendContainer.classList.remove("hidden");
-    }
-    timeLeft--;
-  }
-
-  resendCodeBtn.onclick = (e) => {
-    e.preventDefault();
-    sendVerificationCode(emailInput.value);
-  };
-
-  function validateEmail(email) {
-    const regex = /^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$/;
-    return regex.test(email);
-  }
-</script>
+    // Verify code
+    document.getElementById('verify-btn').onclick = () => {
+      const code = document.getElementById('verification-code').value.trim();
+      const msg = document.getElementById('code-message');
+      if (code === generatedCode) {
+        msg.innerHTML = "<span class='success'>Email verified successfully!</span>";
+        setTimeout(() => {
+          verifyCodeForm.style.display = 'none';
+          passwordSetupForm.style.display = 'block';
+          formTitle.innerText = 'Set Password';
+        }, 1000);
+      } else {
+        msg.innerHTML = "<span class='error'>Invalid code. Try again.</span>";
+      }
+    };
+  </script>
 </body>
 </html>
