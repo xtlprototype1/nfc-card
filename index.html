@@ -32,7 +32,7 @@
 </head>
 <body>
   <div class="card">
-    <img id="photo" src="https://via.placeholder.com/100" alt="Profile Photo" />
+    <img id="photo" src="https://via.placeholder.com/100" alt="Profile Photo" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=Image+Not+Found';" />
     <h2 id="name">Loading...</h2>
     <p id="bio"></p>
     <p id="email"></p>
@@ -41,12 +41,11 @@
     <a id="linkedin" href="#" target="_blank"></a>
   </div>
 
-  <!-- Firebase SDKs -->
-  <script type="module">
-    // Import Firebase SDK (this is where the error might occur)
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+  <!-- Include Firebase SDKs via script tags -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
+  
+  <script>
     // Your Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAV6UygRZ1ItG1ywxfpsWfsGSOpZD3ZFoE",
@@ -58,38 +57,41 @@
     };
 
     // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    if (typeof firebase !== 'undefined') {
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();  // Access Firestore
 
-    // Load profile data with error handling
-    async function loadProfile() {
-      try {
-        const docRef = doc(db, "profiles", "test123");
-        const docSnap = await getDoc(docRef);
+      async function loadProfile() {
+        try {
+          const docRef = db.collection("profiles").doc("test123");
+          const docSnap = await docRef.get();
 
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          document.getElementById("name").innerText = data.name || "Name not found";
-          document.getElementById("bio").innerText = data.bio || "Bio not found";
-          document.getElementById("email").innerText = "📧 " + (data.email || "Email not found");
-          document.getElementById("phone").innerText = "📞 " + (data.phone || "Phone not found");  // Fixed the incomplete line
-          // Add more fields if needed, e.g., Instagram and LinkedIn
-          document.getElementById("instagram").href = data.instagram || "#";
-          document.getElementById("instagram").innerText = data.instagram ? "Instagram" : "";
-          document.getElementById("linkedin").href = data.linkedin || "#";
-          document.getElementById("linkedin").innerText = data.linkedin ? "LinkedIn" : "";
-        } else {
-          console.error("No document found!");
-          document.getElementById("name").innerText = "Profile not found";
+          if (docSnap.exists) {
+            const data = docSnap.data();
+            document.getElementById("name").innerText = data.name || "Name not found";
+            document.getElementById("bio").innerText = data.bio || "Bio not found";
+            document.getElementById("email").innerText = "📧 " + (data.email || "Email not found");
+            document.getElementById("phone").innerText = "📞 " + (data.phone || "Phone not found");
+            document.getElementById("instagram").href = data.instagram || "#";
+            document.getElementById("instagram").innerText = data.instagram ? "Instagram" : "";
+            document.getElementById("linkedin").href = data.linkedin || "#";
+            document.getElementById("linkedin").innerText = data.linkedin ? "LinkedIn" : "";
+          } else {
+            console.error("No document found!");
+            document.getElementById("name").innerText = "Profile not found";
+          }
+        } catch (error) {
+          console.error("Error loading profile: ", error);
+          document.getElementById("name").innerText = "Error loading data - check console for details";
         }
-      } catch (error) {
-        console.error("Error loading profile: ", error);  // This will log errors like network issues
-        document.getElementById("name").innerText = "Error loading data";
       }
-    }
 
-    // Call the function when the page loads
-    window.addEventListener('load', loadProfile);
+      // Call the function when the page loads
+      window.addEventListener('load', loadProfile);
+    } else {
+      console.error("Firebase script failed to load. Please check your network.");
+      document.getElementById("name").innerText = "Firebase not loaded";
+    }
   </script>
 </body>
 </html>
