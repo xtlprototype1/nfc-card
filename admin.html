@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9fafb;
+      color: #333;
+      padding: 30px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 { text-align: center; }
+    label { display: block; margin-top: 15px; font-weight: bold; }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 15px;
+      border: none;
+      background: #2563eb;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <h1>Admin — Edit Profile</h1>
+
+  <label>Name</label>
+  <input type="text" id="name">
+
+  <label>Bio</label>
+  <textarea id="bio" rows="3"></textarea>
+
+  <label>Email</label>
+  <input type="email" id="email">
+
+  <label>Phone</label>
+  <input type="text" id="phone">
+
+  <label>Instagram URL</label>
+  <input type="text" id="instagram">
+
+  <label>LinkedIn URL</label>
+  <input type="text" id="linkedin">
+
+  <label>Profile Photo URL</label>
+  <input type="text" id="photo">
+
+  <button id="saveBtn">💾 Save Changes</button>
+
+  <p id="status"></p>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAV6UygRZ1ItG1ywxfpsWfsGSOpZD3ZFoE",
+      authDomain: "nfc-ptyp1.firebaseapp.com",
+      projectId: "nfc-ptyp1",
+      storageBucket: "nfc-ptyp1.appspot.com",
+      messagingSenderId: "1014619306049",
+      appId: "1:1014619306049:web:33bae58475464af792eec0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const docRef = doc(db, "profiles", "test123");
+
+    // Load current profile
+    async function loadProfile() {
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        document.getElementById("name").value = data.name || "";
+        document.getElementById("bio").value = data.bio || "";
+        document.getElementById("email").value = data.email || "";
+        document.getElementById("phone").value = data.phone || "";
+        document.getElementById("instagram").value = data.instagram || "";
+        document.getElementById("linkedin").value = data.linkedin || "";
+        document.getElementById("photo").value = data.photo || "";
+      }
+    }
+
+    // Save updated profile
+    async function saveProfile() {
+      const data = {
+        name: document.getElementById("name").value,
+        bio: document.getElementById("bio").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        instagram: document.getElementById("instagram").value,
+        linkedin: document.getElementById("linkedin").value,
+        photo: document.getElementById("photo").value
+      };
+
+      await setDoc(docRef, data);
+      document.getElementById("status").innerText = "✅ Profile updated successfully!";
+    }
+
+    document.getElementById("saveBtn").addEventListener("click", saveProfile);
+
+    loadProfile();
+  </script>
+</body>
+</html>
