@@ -1,157 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NFC Card | Sign Up / Login</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NFC Card — Login / Create Account (UI)</title>
   <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background: linear-gradient(135deg, #1e1e2f, #2d2d44);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
+    :root{
+      --bg:#f4f6fb; --card:#fff; --accent:#2563eb; --success:#16a34a; --danger:#ef4444; --muted:#6b7280;
+      --radius:12px; --shadow:0 6px 20px rgba(16,24,40,0.08);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
-
-    .container {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      width: 320px;
-      text-align: center;
+    html,body{height:100%;margin:0;background:var(--bg);display:flex;align-items:center;justify-content:center}
+    .wrap{width:360px}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+    h1{font-size:18px;margin:0 0 12px;color:#0f172a;text-align:center}
+    .tabs{display:flex;gap:8px;margin-bottom:12px}
+    .tab{flex:1;padding:8px 10px;border-radius:10px;text-align:center;cursor:pointer;border:1px solid transparent}
+    .tab.active{background:linear-gradient(90deg,#eef4ff,#f7fbff);border-color:rgba(37,99,235,0.12);color:var(--accent);font-weight:600}
+    form{display:grid;gap:10px}
+    label{font-size:13px;color:#334155}
+    input[type="email"], input[type="password"], input[type="text"], input[type="number"]{
+      width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef8;background:#fbfdff;font-size:14px;
+      box-sizing:border-box;
     }
-
-    h2 {
-      margin-bottom: 20px;
-      color: #00d4ff;
-    }
-
-    input {
-      width: 90%;
-      padding: 10px;
-      margin: 8px 0;
-      border: none;
-      border-radius: 8px;
-      outline: none;
-      font-size: 14px;
-    }
-
-    button {
-      width: 95%;
-      padding: 10px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 8px;
-      background-color: #00d4ff;
-      color: #1e1e2f;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background-color: #02b3d4;
-    }
-
-    .note {
-      font-size: 12px;
-      color: #ccc;
-      margin-top: 15px;
-    }
+    .row{display:flex;gap:8px}
+    .btn{width:100%;padding:10px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-weight:600;cursor:pointer}
+    .btn.secondary{background:#eef2ff;color:var(--accent);border:1px solid rgba(37,99,235,0.08)}
+    .muted{font-size:13px;color:var(--muted);text-align:center;margin-top:6px}
+    .hint{font-size:13px;color:#475569}
+    .status{padding:8px;border-radius:8px;margin-top:8px;font-weight:600;text-align:center}
+    .status.success{background:rgba(16,185,129,0.12);color:var(--success)}
+    .status.error{background:rgba(239,68,68,0.08);color:var(--danger)}
+    .small{font-size:13px;color:#475569}
+    .hidden{display:none}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Sign Up / Login</h2>
-    <input type="email" id="email" placeholder="Email" required />
-    <input type="password" id="password" placeholder="Password" required />
-    <button id="signupBtn">Sign Up</button>
-    <button id="loginBtn">Login</button>
-    <p class="note">Check your inbox for verification after signing up.</p>
+  <div class="wrap">
+    <div class="card" role="main" aria-labelledby="title">
+      <h1 id="title">Sign in or Create account</h1>
+
+      <div class="tabs" aria-hidden="false">
+        <div class="tab active" id="tab-login">Login</div>
+        <div class="tab" id="tab-signup">Create account</div>
+      </div>
+
+      <!-- Status messages -->
+      <div id="statusMsg" class="status hidden" role="status" aria-live="polite"></div>
+
+      <!-- LOGIN FORM (default) -->
+      <form id="loginForm" class="state">
+        <label for="loginEmail">Email</label>
+        <input id="loginEmail" type="email" placeholder="you@example.com" required />
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password" placeholder="Your password" required />
+        <button type="button" id="loginBtn" class="btn">Login</button>
+        <div class="muted">Need an account? Click “Create account”</div>
+      </form>
+
+      <!-- SIGNUP FLOW - STEP 1: enter email to receive code -->
+      <form id="signupStep1" class="state hidden" onsubmit="return false;">
+        <label for="signupEmail">Email to register</label>
+        <input id="signupEmail" type="email" placeholder="yourname@example.com" required />
+        <div class="hint small">We'll send a 6-digit verification code to this email. (UI-only for now)</div>
+        <div class="row">
+          <button type="button" id="sendCodeBtn" class="btn">Send verification code</button>
+          <button type="button" id="backToLogin1" class="btn secondary">Back</button>
+        </div>
+      </form>
+
+      <!-- SIGNUP FLOW - STEP 1b: enter verification code -->
+      <form id="signupCodeForm" class="state hidden" onsubmit="return false;">
+        <label for="codeInput">Enter verification code</label>
+        <input id="codeInput" type="number" inputmode="numeric" placeholder="6-digit code" />
+        <div class="small">Check your email for the code. (UI placeholder: copy code shown below.)</div>
+        <div class="row">
+          <button type="button" id="verifyCodeBtn" class="btn">Verify code</button>
+          <button type="button" id="resendCodeBtn" class="btn secondary">Resend</button>
+        </div>
+        <div class="muted small">Tip: this is a UI demo — no real email sent in Phase 1.</div>
+      </form>
+
+      <!-- SIGNUP FLOW - STEP 2: set password -->
+      <form id="signupStep2" class="state hidden" onsubmit="return false;">
+        <label for="newPassword">Create password</label>
+        <input id="newPassword" type="password" placeholder="Minimum 8 characters" />
+        <label for="confirmPassword">Confirm password</label>
+        <input id="confirmPassword" type="password" placeholder="Confirm password" />
+        <div class="row">
+          <button type="button" id="createAccountBtn" class="btn">Create account</button>
+          <button type="button" id="backToLogin2" class="btn secondary">Cancel</button>
+        </div>
+        <div class="muted small">After creating, user will be able to edit profile (Phase 2 will add backend).</div>
+      </form>
+
+    </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import {
-      getAuth,
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      sendEmailVerification,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-
-    // 🔹 Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyAV6UygRZ1ItG1ywxfpsWfsGSOpZD3ZFoE",
-      authDomain: "nfc-ptyp1.firebaseapp.com",
-      projectId: "nfc-ptyp1",
-      storageBucket: "nfc-ptyp1.appspot.com",
-      messagingSenderId: "1014619306049",
-      appId: "1:1014619306049:web:33bae58475464af792eec0"
+  <script>
+    /* ---------- UI state helpers ---------- */
+    const tabs = { login: document.getElementById('tab-login'), signup: document.getElementById('tab-signup') };
+    const forms = {
+      login: document.getElementById('loginForm'),
+      s1: document.getElementById('signupStep1'),
+      code: document.getElementById('signupCodeForm'),
+      s2: document.getElementById('signupStep2')
     };
+    const statusEl = document.getElementById('statusMsg');
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    function showStatus(msg, type='success', duration=3000){
+      statusEl.className = 'status ' + (type==='error' ? 'error' : 'success');
+      statusEl.textContent = msg;
+      statusEl.classList.remove('hidden');
+      if(duration) setTimeout(()=> statusEl.classList.add('hidden'), duration);
+    }
 
-    // 🔸 SIGN UP with Email Verification
-    document.getElementById("signupBtn").addEventListener("click", async () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+    function hideAllForms(){ Object.values(forms).forEach(f=>f.classList.add('hidden')); }
 
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        // Send verification email
-        await sendEmailVerification(user);
-
-        // Create Firestore profile but mark as unverified
-        await setDoc(doc(db, "profiles", user.uid), {
-          name: "New User",
-          bio: "Add your bio here...",
-          email: email,
-          verified: false,
-          phone: "",
-          instagram: "",
-          linkedin: "",
-          photo: ""
-        });
-
-        alert("✅ Verification email sent! Please check your inbox.");
-        await signOut(auth); // Force sign out until verified
-      } catch (error) {
-        alert("❌ " + error.message);
-      }
+    // Tab click behavior
+    tabs.login.addEventListener('click', () => {
+      tabs.login.classList.add('active'); tabs.signup.classList.remove('active');
+      hideAllForms(); forms.login.classList.remove('hidden'); clearStatus();
+    });
+    tabs.signup.addEventListener('click', () => {
+      tabs.signup.classList.add('active'); tabs.login.classList.remove('active');
+      hideAllForms(); forms.s1.classList.remove('hidden'); clearStatus();
     });
 
-    // 🔸 LOGIN only if email verified
-    document.getElementById("loginBtn").addEventListener("click", async () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+    function clearStatus(){ statusEl.classList.add('hidden'); statusEl.textContent=''; }
 
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
+    /* ---------- Phase 1: local mock verification logic (UI only) ---------- */
+    // NOTE: In Phase 2/3 you'll replace this with real calls to:
+    // - Firebase Auth (check if email exists, create user)
+    // - Email sending (Cloud Function, EmailJS, or similar)
+    let mockVerificationStore = {}; // { email: { code, expiresAt } }
 
-        if (!user.emailVerified) {
-          alert("⚠️ Please verify your email before logging in.");
-          await signOut(auth);
-          return;
-        }
+    function generateCode(){ return String(Math.floor(100000 + Math.random()*900000)); }
+    function nowPlusMinutes(m){ return Date.now() + m*60*1000; }
 
-        alert("✅ Login successful!");
-        window.location.href = "admin.html?uid=" + user.uid;
-      } catch (error) {
-        alert("❌ " + error.message);
-      }
+    // Send code (UI-only)
+    document.getElementById('sendCodeBtn').addEventListener('click', () => {
+      const email = document.getElementById('signupEmail').value.trim();
+      if(!email || !/^\S+@\S+\.\S+$/.test(email)){ showStatus('Please enter a valid email.', 'error'); return; }
+
+      // In Phase 2: call server to check if email already registered and to send real email.
+      // Here we mock: generate & show code in console and store expiry (10 minutes)
+      const code = generateCode();
+      mockVerificationStore[email] = { code, expiresAt: nowPlusMinutes(10) };
+      console.log('%c[MOCK VERIFICATION] Code for ' + email + ' = ' + code, 'color: #2563eb; font-weight:700;');
+      showStatus('Verification code (mock) generated and logged to console. Enter it to continue.', 'success', 6000);
+
+      // UI move to code input
+      hideAllForms(); forms.code.classList.remove('hidden');
+      // For demo convenience, pre-fill the code input (remove in real integration)
+      document.getElementById('codeInput').value = code;
     });
+
+    // Verify code (UI-only)
+    document.getElementById('verifyCodeBtn').addEventListener('click', () => {
+      const email = document.getElementById('signupEmail').value.trim();
+      const typed = (document.getElementById('codeInput').value || '').trim();
+      if(!mockVerificationStore[email]){ showStatus('No code requested for this email. Start again.', 'error'); return; }
+
+      const record = mockVerificationStore[email];
+      if(Date.now() > record.expiresAt){ showStatus('Code expired. Please resend.', 'error'); return; }
+      if(typed !== record.code){ showStatus('Incorrect code. Check your email and try again.', 'error'); return; }
+
+      showStatus('Code verified — proceed to set password.', 'success', 2500);
+      hideAllForms(); forms.s2.classList.remove('hidden');
+    });
+
+    // Resend code
+    document.getElementById('resendCodeBtn').addEventListener('click', () => {
+      document.getElementById('sendCodeBtn').click();
+    });
+
+    // Back/cancel buttons
+    document.getElementById('backToLogin1').addEventListener('click', ()=>{ tabs.login.click(); });
+    document.getElementById('backToLogin2').addEventListener('click', ()=>{ tabs.login.click(); });
+
+    /* ---------- Signup final step: create account (UI) ---------- */
+    document.getElementById('createAccountBtn').addEventListener('click', () => {
+      const email = document.getElementById('signupEmail').value.trim();
+      const pw = document.getElementById('newPassword').value;
+      const pw2 = document.getElementById('confirmPassword').value;
+
+      if(!email){ showStatus('Missing email. Start again.', 'error'); return; }
+      if(!pw || pw.length < 8){ showStatus('Password must be at least 8 characters.', 'error'); return; }
+      if(pw !== pw2){ showStatus('Passwords do not match.', 'error'); return; }
+
+      // Phase 2: Replace this with createUserWithEmailAndPassword(...) & Firestore profile creation.
+      console.log('%c[MOCK ACCOUNT CREATED] email:', 'color: #16a34a; font-weight:700;', email);
+      showStatus('Account created (mock). In Phase 2 this will create Firebase account and redirect.', 'success', 4000);
+
+      // For demo: return to login and pre-fill email field
+      hideAllForms(); forms.login.classList.remove('hidden');
+      document.getElementById('loginEmail').value = email;
+      document.getElementById('loginPassword').value = '';
+      tabs.login.classList.add('active'); tabs.signup.classList.remove('active');
+    });
+
+    /* ---------- Login (UI-only) ---------- */
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      const email = document.getElementById('loginEmail').value.trim();
+      const pw = document.getElementById('loginPassword').value;
+      if(!email || !pw){ showStatus('Please enter credentials.', 'error'); return; }
+
+      // Phase 2: Replace this with signInWithEmailAndPassword(...) and check emailVerified
+      showStatus('Mock login successful. In Phase 2 this will authenticate with Firebase and redirect.', 'success', 3000);
+    });
+
+    /* ---------- Initialize view ---------- */
+    tabs.login.click();
   </script>
 </body>
 </html>
