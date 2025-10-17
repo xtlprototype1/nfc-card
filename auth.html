@@ -31,14 +31,16 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
+      padding: 20px;
     }
 
     .auth-container {
       background: var(--card-color);
       border-radius: 20px;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
-      width: 360px;
+      width: 100%;
+      max-width: 380px;
       padding: 40px 30px;
       text-align: center;
       position: relative;
@@ -54,15 +56,16 @@
       position: absolute;
       top: 15px;
       right: 15px;
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
     }
 
     h2 {
       margin-bottom: 25px;
       color: var(--text-color);
       font-weight: 500;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
+      font-size: 1.4rem;
     }
 
     input {
@@ -131,6 +134,21 @@
       color: var(--muted-text);
     }
 
+    @media (max-width: 480px) {
+      .auth-container {
+        padding: 30px 20px;
+        border-radius: 16px;
+      }
+
+      h2 {
+        font-size: 1.25rem;
+        margin-bottom: 20px;
+      }
+
+      button, input {
+        font-size: 13.5px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -139,6 +157,7 @@
 
     <h2 id="form-title">Login</h2>
 
+    <!-- LOGIN -->
     <div id="login-form">
       <input type="email" id="login-email" placeholder="Email" required />
       <input type="password" id="login-password" placeholder="Password" required />
@@ -147,6 +166,7 @@
       <div class="message" id="login-message"></div>
     </div>
 
+    <!-- EMAIL STEP -->
     <div id="signup-email-form" style="display:none;">
       <input type="email" id="signup-email" placeholder="Enter your email" required />
       <button id="send-code-btn">Continue</button>
@@ -154,6 +174,7 @@
       <div class="link">Already have an account? <span id="back-login-1">Login</span></div>
     </div>
 
+    <!-- VERIFICATION -->
     <div id="verify-code-form" style="display:none;">
       <input type="text" id="verification-code" placeholder="Enter 6-digit code" maxlength="6" required />
       <button id="verify-btn">Verify</button>
@@ -162,6 +183,7 @@
       <div class="message" id="code-message"></div>
     </div>
 
+    <!-- PASSWORD -->
     <div id="password-setup-form" style="display:none;">
       <input type="password" id="password" placeholder="Password" required />
       <input type="password" id="confirm-password" placeholder="Confirm Password" required />
@@ -172,7 +194,6 @@
   </div>
 
   <script>
-    // DOM Elements
     const loginForm = document.getElementById('login-form');
     const signupEmailForm = document.getElementById('signup-email-form');
     const verifyCodeForm = document.getElementById('verify-code-form');
@@ -185,7 +206,7 @@
     let timerInterval;
     let timeLeft = 60;
 
-    // Show forms
+    // Switch between forms
     document.getElementById('create-link').onclick = () => {
       loginForm.style.display = 'none';
       signupEmailForm.style.display = 'block';
@@ -207,14 +228,13 @@
       if (!email) return alert('Please enter a valid email.');
 
       generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-      console.log("Verification code:", generatedCode); // For demo
+      console.log("Verification code:", generatedCode);
       signupEmailForm.style.display = 'none';
       verifyCodeForm.style.display = 'block';
       formTitle.innerText = 'Verify Email';
       startTimer();
     };
 
-    // Timer logic
     function startTimer() {
       timeLeft = 60;
       resendBtn.disabled = true;
@@ -244,7 +264,6 @@
       }
     };
 
-    // Verify code
     document.getElementById('verify-btn').onclick = () => {
       const code = document.getElementById('verification-code').value.trim();
       const msg = document.getElementById('code-message');
