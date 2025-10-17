@@ -3,121 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin — Edit Profile</title>
+  <title>Edit Profile – NFC Card</title>
   <style>
     body {
-      font-family: "Poppins", sans-serif;
-      background: #f5f7fb;
-      padding: 20px;
-      max-width: 500px;
-      margin: auto;
-      color: #333;
-    }
-    h2 {
+      font-family: Arial, sans-serif;
+      background: #f7f9fc;
+      padding: 30px;
       text-align: center;
-      color: #222;
     }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: 600;
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
     }
     input, textarea {
       width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 8px;
+      padding: 8px;
+      margin: 6px 0;
       border: 1px solid #ccc;
-      box-sizing: border-box;
-      font-size: 15px;
-    }
-    textarea {
-      resize: vertical;
+      border-radius: 6px;
+      font-size: 14px;
     }
     button {
-      width: 100%;
-      background-color: #007bff;
+      background: #007bff;
       color: white;
-      padding: 12px;
       border: none;
-      border-radius: 10px;
+      border-radius: 6px;
+      padding: 10px 15px;
       font-size: 16px;
       cursor: pointer;
-      margin-top: 20px;
-      transition: 0.3s;
+      width: 100%;
+      margin-top: 10px;
     }
     button:hover {
-      background-color: #0056b3;
+      background: #0056b3;
     }
     #status {
-      text-align: center;
-      margin-top: 15px;
+      margin-top: 10px;
       font-weight: bold;
+      color: green;
     }
-    #preview {
-      display: block;
-      margin: 10px auto;
-      border-radius: 50%;
+    img {
       width: 100px;
       height: 100px;
+      border-radius: 50%;
+      margin-bottom: 10px;
       object-fit: cover;
-      border: 2px solid #ddd;
-    }
-    .upload-help {
-      font-size: 13px;
-      margin-top: 3px;
-      text-align: center;
-    }
-    .upload-help a {
-      color: #007bff;
-      text-decoration: none;
-    }
-    .upload-help a:hover {
-      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <h2>🛠 Edit Profile</h2>
-
-  <label>Name:</label>
-  <input type="text" id="name" />
-
-  <label>Bio:</label>
-  <textarea id="bio"></textarea>
-
-  <label>Email:</label>
-  <input type="email" id="email" />
-
-  <label>Phone:</label>
-  <input type="text" id="phone" />
-
-  <label>Instagram:</label>
-  <input type="text" id="instagram" />
-
-  <label>LinkedIn:</label>
-  <input type="text" id="linkedin" />
-
-  <label>Profile Photo:</label>
-  <input type="text" id="photo" placeholder="Paste direct image link here (e.g. https://i.imgur.com/abc123.jpg)" />
-  <div class="upload-help">
-    <p>📷 Upload your photo on 
-      <a href="https://imgur.com/upload" target="_blank">Imgur</a> or 
-      <a href="https://postimages.org" target="_blank">PostImages</a> 
-      and paste the link above.
-    </p>
+  <div class="card">
+    <h2>✏️ Edit Your NFC Profile</h2>
+    <img id="preview" src="https://placehold.co/100x100" alt="Preview" />
+    <input id="photo" type="text" placeholder="Profile photo URL" />
+    <input id="name" type="text" placeholder="Full Name" />
+    <textarea id="bio" placeholder="Short bio"></textarea>
+    <input id="email" type="email" placeholder="Email" />
+    <input id="phone" type="text" placeholder="Phone number" />
+    <input id="instagram" type="text" placeholder="Instagram URL" />
+    <input id="linkedin" type="text" placeholder="LinkedIn URL" />
+    <button id="saveBtn">Save Changes</button>
+    <div id="status"></div>
   </div>
 
-  <!-- Preview -->
-  <img id="preview" src="https://via.placeholder.com/100" alt="Preview" />
-
-  <button id="saveBtn">Save</button>
-  <p id="status"></p>
-
+  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
+    // Your Firebase project configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAV6UygRZ1ItG1ywxfpsWfsGSOpZD3ZFoE",
       authDomain: "nfc-ptyp1.firebaseapp.com",
@@ -127,48 +85,51 @@
       appId: "1:1014619306049:web:33bae58475464af792eec0"
     };
 
+    // Initialize Firebase and Firestore
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
     const docRef = doc(db, "profiles", "test123");
+    const statusEl = document.getElementById("status");
 
-    // Load current profile
+    // Load existing data into form
     async function loadProfile() {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
+        document.getElementById("photo").value = data.photo || "";
+        document.getElementById("preview").src = data.photo || "https://placehold.co/100x100";
         document.getElementById("name").value = data.name || "";
         document.getElementById("bio").value = data.bio || "";
         document.getElementById("email").value = data.email || "";
         document.getElementById("phone").value = data.phone || "";
         document.getElementById("instagram").value = data.instagram || "";
         document.getElementById("linkedin").value = data.linkedin || "";
-        document.getElementById("photo").value = data.photo || "";
-        document.getElementById("preview").src = data.photo || "https://via.placeholder.com/100";
       }
     }
+
     loadProfile();
 
-    // Live preview when typing/pasting image URL
+    // Live preview for image URL
     document.getElementById("photo").addEventListener("input", () => {
-      const link = document.getElementById("photo").value.trim();
-      document.getElementById("preview").src = link || "https://via.placeholder.com/100";
+      const url = document.getElementById("photo").value.trim();
+      document.getElementById("preview").src = url || "https://placehold.co/100x100";
     });
 
-    // Save profile
+    // Save new data to Firestore
     document.getElementById("saveBtn").addEventListener("click", async () => {
+      statusEl.innerText = "⏳ Saving...";
       const newData = {
+        photo: document.getElementById("photo").value,
         name: document.getElementById("name").value,
         bio: document.getElementById("bio").value,
         email: document.getElementById("email").value,
         phone: document.getElementById("phone").value,
         instagram: document.getElementById("instagram").value,
-        linkedin: document.getElementById("linkedin").value,
-        photo: document.getElementById("photo").value
+        linkedin: document.getElementById("linkedin").value
       };
-
       await setDoc(docRef, newData);
-      document.getElementById("status").innerText = "✅ Profile updated successfully!";
+      statusEl.innerText = "✅ Profile updated successfully!";
+      setTimeout(() => { statusEl.innerText = ""; }, 3000);
     });
   </script>
 </body>
