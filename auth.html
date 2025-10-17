@@ -72,7 +72,7 @@
     <input type="password" id="password" placeholder="Password" required />
     <button id="signupBtn">Sign Up</button>
     <button id="loginBtn">Login</button>
-    <p class="note">After login, you’ll be redirected to your Admin Page.</p>
+    <p class="note">Check your inbox for verification after signing up.</p>
   </div>
 
   <script type="module">
@@ -81,10 +81,12 @@
       getAuth,
       createUserWithEmailAndPassword,
       signInWithEmailAndPassword,
+      sendEmailVerification,
+      signOut
     } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    // 🔹 Firebase Configuration
+    // 🔹 Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyAV6UygRZ1ItG1ywxfpsWfsGSOpZD3ZFoE",
       authDomain: "nfc-ptyp1.firebaseapp.com",
@@ -93,3 +95,63 @@
       messagingSenderId: "1014619306049",
       appId: "1:1014619306049:web:33bae58475464af792eec0"
     };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // 🔸 SIGN UP with Email Verification
+    document.getElementById("signupBtn").addEventListener("click", async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Send verification email
+        await sendEmailVerification(user);
+
+        // Create Firestore profile but mark as unverified
+        await setDoc(doc(db, "profiles", user.uid), {
+          name: "New User",
+          bio: "Add your bio here...",
+          email: email,
+          verified: false,
+          phone: "",
+          instagram: "",
+          linkedin: "",
+          photo: ""
+        });
+
+        alert("✅ Verification email sent! Please check your inbox.");
+        await signOut(auth); // Force sign out until verified
+      } catch (error) {
+        alert("❌ " + error.message);
+      }
+    });
+
+    // 🔸 LOGIN only if email verified
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        if (!user.emailVerified) {
+          alert("⚠️ Please verify your email before logging in.");
+          await signOut(auth);
+          return;
+        }
+
+        alert("✅ Login successful!");
+        window.location.href = "admin.html?uid=" + user.uid;
+      } catch (error) {
+        alert("❌ " + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
