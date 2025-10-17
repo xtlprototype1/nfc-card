@@ -1,74 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MonCut Digital Card | Auth</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NFC Digital Card | Login</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #f8f7f3;
-      color: #2d2d2d;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+    :root {
+      --bg-color: #f9f7f3; /* soft ivory */
+      --card-color: #fffdfa; /* warm neutral */
+      --text-color: #2b2b2b;
+      --accent-color: #b59b6a; /* soft gold */
+      --muted-text: #7b7b7b;
+      --error-color: #b94c4c;
+      --success-color: #4e8a6d;
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
     }
 
-    .container {
-      text-align: center;
-      width: 360px;
-      background: #ffffff;
+    body {
+      background-color: var(--bg-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .auth-container {
+      background: var(--card-color);
       border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+      width: 100%;
+      max-width: 380px;
       padding: 40px 30px;
+      text-align: center;
+      position: relative;
+      animation: fadeInUp 0.6s ease;
     }
 
-    h1.brand {
-      font-weight: 600;
-      font-size: 1.5em;
-      letter-spacing: 1px;
-      color: #3e3d37;
-      margin-bottom: 25px;
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .leaf-logo {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 26px;
+      height: 26px;
     }
 
     h2 {
+      margin-bottom: 25px;
+      color: var(--text-color);
       font-weight: 500;
-      color: #3e3d37;
-      margin-bottom: 20px;
+      letter-spacing: 0.3px;
+      font-size: 1.4rem;
     }
 
     input {
       width: 100%;
       padding: 12px;
       margin: 8px 0;
+      border: 1px solid #e6e6e6;
       border-radius: 10px;
-      border: 1px solid #c9c6b6;
-      background-color: #fcfcfa;
+      background-color: #fefefe;
       font-size: 14px;
-      color: #2d2d2d;
-      transition: box-shadow 0.2s ease-in-out;
+      color: var(--text-color);
+      outline: none;
+      transition: border-color 0.2s ease;
     }
 
     input:focus {
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(153, 121, 56, 0.2);
+      border-color: var(--accent-color);
     }
 
     button {
       width: 100%;
       padding: 12px;
-      margin-top: 10px;
-      border-radius: 10px;
       border: none;
-      background-color: #857e5d;
+      border-radius: 10px;
+      background-color: var(--accent-color);
       color: white;
-      font-size: 15px;
       font-weight: 500;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(133, 126, 93, 0.3);
-      transition: all 0.2s ease-in-out;
+      margin-top: 10px;
+      transition: transform 0.1s ease;
     }
 
     button:active {
@@ -76,152 +103,181 @@
     }
 
     .link {
+      margin-top: 18px;
       display: block;
-      margin-top: 12px;
-      color: #6b674e;
-      text-decoration: none;
-      font-size: 14px;
-      cursor: pointer;
+      color: var(--muted-text);
+      font-size: 13px;
     }
 
-    .link:hover {
+    .link span {
+      color: var(--accent-color);
+      cursor: pointer;
       text-decoration: underline;
     }
 
     .message {
+      margin-top: 15px;
       font-size: 14px;
-      margin-top: 10px;
-      color: #9a885b;
     }
 
-    .hidden {
-      display: none;
+    .error {
+      color: var(--error-color);
+    }
+
+    .success {
+      color: var(--success-color);
     }
 
     .timer {
-      color: #8a8059;
       font-size: 13px;
-      margin-top: 6px;
+      margin-top: 5px;
+      color: var(--muted-text);
+    }
+
+    @media (max-width: 480px) {
+      .auth-container {
+        padding: 30px 20px;
+        border-radius: 16px;
+      }
+
+      h2 {
+        font-size: 1.25rem;
+        margin-bottom: 20px;
+      }
+
+      button, input {
+        font-size: 13.5px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1 class="brand">MonCut Digital Card</h1>
+  <div class="auth-container">
+    <img src="data:image/svg+xml,%3Csvg fill='none' stroke='%23b59b6a' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 2C8.5 5.5 7 9 7 12c0 4 2 7 5 10 3-3 5-6 5-10 0-3-1.5-6.5-5-10z'/%3E%3C/svg%3E" class="leaf-logo" alt="Leaf Logo"/>
 
-    <!-- LOGIN FORM -->
-    <div id="loginForm">
-      <h2>Login</h2>
-      <input type="email" id="loginEmail" placeholder="Email" required />
-      <input type="password" id="loginPassword" placeholder="Password" required />
-      <button id="loginBtn">Login</button>
-      <p class="link" id="createAccountLink">Create one</p>
+    <h2 id="form-title">Login</h2>
+
+    <!-- LOGIN -->
+    <div id="login-form">
+      <input type="email" id="login-email" placeholder="Email" required />
+      <input type="password" id="login-password" placeholder="Password" required />
+      <button id="login-btn">Login</button>
+      <div class="link">Don’t have an account? <span id="create-link">Create one</span></div>
+      <div class="message" id="login-message"></div>
     </div>
 
-    <!-- SIGNUP STEP 1: EMAIL -->
-    <div id="signupEmailStep" class="hidden">
-      <h2>Create Account</h2>
-      <input type="email" id="signupEmail" placeholder="Enter your email" required />
-      <button id="continueBtn">Continue</button>
-      <p class="link" id="backToLogin1">Back to Login</p>
+    <!-- EMAIL STEP -->
+    <div id="signup-email-form" style="display:none;">
+      <input type="email" id="signup-email" placeholder="Enter your email" required />
+      <button id="send-code-btn">Continue</button>
+      <div class="message" id="email-message"></div>
+      <div class="link">Already have an account? <span id="back-login-1">Login</span></div>
     </div>
 
-    <!-- SIGNUP STEP 2: CODE VERIFICATION -->
-    <div id="verificationStep" class="hidden">
-      <h2>Verify Your Email</h2>
-      <p class="message">A 6-digit code has been sent to your email.</p>
-      <input type="text" id="verificationCode" placeholder="Enter verification code" maxlength="6" required />
-      <button id="verifyCodeBtn">Verify</button>
-      <p class="timer" id="timerText">Code expires in 60s</p>
-      <p class="link hidden" id="resendCodeBtn">Resend Code</p>
+    <!-- VERIFICATION -->
+    <div id="verify-code-form" style="display:none;">
+      <input type="text" id="verification-code" placeholder="Enter 6-digit code" maxlength="6" required />
+      <button id="verify-btn">Verify</button>
+      <div class="timer" id="timer-text">Code expires in 60s</div>
+      <button id="resend-btn" style="margin-top:8px; opacity:0.5; cursor:not-allowed;" disabled>Resend Code</button>
+      <div class="message" id="code-message"></div>
     </div>
 
-    <!-- SIGNUP STEP 3: PASSWORD SETUP -->
-    <div id="passwordStep" class="hidden">
-      <h2>Set Your Password</h2>
+    <!-- PASSWORD -->
+    <div id="password-setup-form" style="display:none;">
       <input type="password" id="password" placeholder="Password" required />
-      <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
-      <button id="createAccountBtn">Create Account</button>
-      <p class="link" id="backToLogin2">Back to Login</p>
+      <input type="password" id="confirm-password" placeholder="Confirm Password" required />
+      <button id="create-account-btn">Create Account</button>
+      <div class="message" id="password-message"></div>
+      <div class="link">Back to <span id="back-login-2">Login</span></div>
     </div>
   </div>
 
   <script>
-    // Screen handling
-    const loginForm = document.getElementById('loginForm');
-    const signupEmailStep = document.getElementById('signupEmailStep');
-    const verificationStep = document.getElementById('verificationStep');
-    const passwordStep = document.getElementById('passwordStep');
-    const createAccountLink = document.getElementById('createAccountLink');
-    const backToLogin1 = document.getElementById('backToLogin1');
-    const backToLogin2 = document.getElementById('backToLogin2');
+    const loginForm = document.getElementById('login-form');
+    const signupEmailForm = document.getElementById('signup-email-form');
+    const verifyCodeForm = document.getElementById('verify-code-form');
+    const passwordSetupForm = document.getElementById('password-setup-form');
+    const formTitle = document.getElementById('form-title');
+    const resendBtn = document.getElementById('resend-btn');
+    const timerText = document.getElementById('timer-text');
 
-    // Timer vars
-    const timerText = document.getElementById('timerText');
-    const resendCodeBtn = document.getElementById('resendCodeBtn');
-    let countdown;
+    let generatedCode = null;
+    let timerInterval;
     let timeLeft = 60;
 
+    // Switch between forms
+    document.getElementById('create-link').onclick = () => {
+      loginForm.style.display = 'none';
+      signupEmailForm.style.display = 'block';
+      formTitle.innerText = 'Create Account';
+    };
+
+    document.getElementById('back-login-1').onclick = document.getElementById('back-login-2').onclick = () => {
+      signupEmailForm.style.display = 'none';
+      verifyCodeForm.style.display = 'none';
+      passwordSetupForm.style.display = 'none';
+      loginForm.style.display = 'block';
+      formTitle.innerText = 'Login';
+      clearInterval(timerInterval);
+    };
+
+    // Mock email verification
+    document.getElementById('send-code-btn').onclick = () => {
+      const email = document.getElementById('signup-email').value.trim();
+      if (!email) return alert('Please enter a valid email.');
+
+      generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+      console.log("Verification code:", generatedCode);
+      signupEmailForm.style.display = 'none';
+      verifyCodeForm.style.display = 'block';
+      formTitle.innerText = 'Verify Email';
+      startTimer();
+    };
+
     function startTimer() {
-      resendCodeBtn.classList.add('hidden');
       timeLeft = 60;
-      timerText.textContent = `Code expires in ${timeLeft}s`;
-      countdown = setInterval(() => {
+      resendBtn.disabled = true;
+      resendBtn.style.opacity = '0.5';
+      resendBtn.style.cursor = 'not-allowed';
+      timerText.innerText = `Code expires in ${timeLeft}s`;
+
+      timerInterval = setInterval(() => {
         timeLeft--;
-        timerText.textContent = `Code expires in ${timeLeft}s`;
+        timerText.innerText = `Code expires in ${timeLeft}s`;
+
         if (timeLeft <= 0) {
-          clearInterval(countdown);
-          timerText.textContent = "Code expired.";
-          resendCodeBtn.classList.remove('hidden');
+          clearInterval(timerInterval);
+          timerText.innerText = "Code expired.";
+          resendBtn.disabled = false;
+          resendBtn.style.opacity = '1';
+          resendBtn.style.cursor = 'pointer';
         }
       }, 1000);
     }
 
-    // Navigation
-    createAccountLink.addEventListener('click', () => {
-      loginForm.classList.add('hidden');
-      signupEmailStep.classList.remove('hidden');
-    });
-    backToLogin1.addEventListener('click', () => {
-      signupEmailStep.classList.add('hidden');
-      loginForm.classList.remove('hidden');
-    });
-    backToLogin2.addEventListener('click', () => {
-      passwordStep.classList.add('hidden');
-      loginForm.classList.remove('hidden');
-    });
-
-    // Simulated verification flow
-    document.getElementById('continueBtn').addEventListener('click', () => {
-      signupEmailStep.classList.add('hidden');
-      verificationStep.classList.remove('hidden');
-      startTimer();
-    });
-
-    resendCodeBtn.addEventListener('click', () => {
-      alert("New verification code sent.");
-      startTimer();
-    });
-
-    document.getElementById('verifyCodeBtn').addEventListener('click', () => {
-      const code = document.getElementById('verificationCode').value;
-      if (code === "123456") { // simulated success
-        verificationStep.classList.add('hidden');
-        passwordStep.classList.remove('hidden');
-      } else {
-        alert("Invalid code. Try again.");
+    resendBtn.onclick = () => {
+      if (!resendBtn.disabled) {
+        generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+        console.log("Resent new code:", generatedCode);
+        startTimer();
       }
-    });
+    };
 
-    document.getElementById('loginBtn').addEventListener('click', () => {
-      alert("Login feature connects to Firebase next.");
-    });
-
-    document.getElementById('createAccountBtn').addEventListener('click', () => {
-      alert("Account created successfully! Redirect to login.");
-      passwordStep.classList.add('hidden');
-      loginForm.classList.remove('hidden');
-    });
+    document.getElementById('verify-btn').onclick = () => {
+      const code = document.getElementById('verification-code').value.trim();
+      const msg = document.getElementById('code-message');
+      if (code === generatedCode) {
+        msg.innerHTML = "<span class='success'>Email verified successfully!</span>";
+        setTimeout(() => {
+          verifyCodeForm.style.display = 'none';
+          passwordSetupForm.style.display = 'block';
+          formTitle.innerText = 'Set Password';
+        }, 1000);
+      } else {
+        msg.innerHTML = "<span class='error'>Invalid code. Try again.</span>";
+      }
+    };
   </script>
 </body>
 </html>
