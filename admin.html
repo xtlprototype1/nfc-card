@@ -45,6 +45,7 @@
       margin-top: 10px;
       font-weight: bold;
       color: green;
+      transition: opacity 0.5s ease;
     }
     img {
       width: 100px;
@@ -126,6 +127,7 @@
     // 🔸 Save updates to Firestore
     document.getElementById("saveBtn").addEventListener("click", async () => {
       statusEl.innerText = "⏳ Saving...";
+      statusEl.style.color = "black";
       const newData = {
         photo: document.getElementById("photo").value,
         name: document.getElementById("name").value,
@@ -138,11 +140,19 @@
       try {
         await setDoc(docRef, newData);
         statusEl.innerText = "✅ Profile updated successfully!";
-        await loadProfile(); // refreshes the page data automatically
-        setTimeout(() => { statusEl.innerText = ""; }, 3000);
+        statusEl.style.color = "green";
+        await loadProfile(); // refreshes the form
+        setTimeout(() => { 
+          statusEl.style.opacity = "0";
+          setTimeout(() => {
+            statusEl.innerText = "";
+            statusEl.style.opacity = "1";
+          }, 500);
+        }, 3000);
       } catch (err) {
         console.error("Error saving:", err);
         statusEl.innerText = "❌ Failed to save profile.";
+        statusEl.style.color = "red";
       }
     });
   </script>
