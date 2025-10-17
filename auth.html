@@ -1,115 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NFC Card – Login / Create Account</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NFC Card – Login / Signup</title>
+
   <style>
     :root {
-      --bg: #0f0f0f;
-      --card: #1a1a1a;
-      --accent: #d4af37;
-      --accent-hover: #e3c65a;
-      --text: #f5f5f5;
-      --muted: #aaa;
-      --error: #ff4b4b;
-      --shadow: rgba(212, 175, 55, 0.2);
+      --primary: #3A7D44; /* Deep natural green */
+      --accent: #E57C23;  /* Organic orange */
+      --secondary: #F2A154; /* Soft gold */
+      --text-dark: #1E392A; /* Earthy dark green-gray */
+      --bg: #F8F7F3; /* Warm off-white */
+      --muted: #B2B2A9;
+      --error: #D64545;
+      --shadow: 0 8px 20px rgba(58, 125, 68, 0.08);
+      --radius: 14px;
+      --transition: all 0.3s ease;
     }
 
-    body {
+    html, body {
+      height: 100%;
       margin: 0;
-      height: 100vh;
+      font-family: "Poppins", "Inter", system-ui, sans-serif;
       background: var(--bg);
-      font-family: 'Poppins', 'Inter', sans-serif;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--text);
     }
 
     .card {
-      background: var(--card);
-      padding: 2rem;
-      border-radius: 20px;
-      box-shadow: 0 0 40px var(--shadow);
-      max-width: 360px;
-      width: 100%;
-      text-align: center;
-      transition: all 0.3s ease;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      width: 340px;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 26px rgba(58, 125, 68, 0.12);
     }
 
     h2 {
+      color: var(--text-dark);
+      text-align: center;
       font-weight: 600;
-      font-size: 1.4rem;
-      margin-bottom: 1.2rem;
-      letter-spacing: 0.5px;
+      margin-bottom: 16px;
     }
 
-    input {
-      width: 100%;
-      padding: 12px 14px;
-      margin: 8px 0;
-      border: 1px solid #333;
-      border-radius: 8px;
-      background: #111;
-      color: var(--text);
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    label {
       font-size: 14px;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"],
+    input[type="number"] {
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: var(--radius);
+      font-size: 15px;
+      background: #fff;
+      color: var(--text-dark);
+      transition: var(--transition);
       outline: none;
-      transition: 0.2s ease;
     }
 
     input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 5px var(--accent);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(58, 125, 68, 0.15);
     }
 
     button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
+      background: var(--primary);
+      color: #fff;
       border: none;
-      border-radius: 8px;
-      font-weight: 600;
+      padding: 12px;
+      border-radius: var(--radius);
       font-size: 15px;
+      font-weight: 600;
       cursor: pointer;
-      background: var(--accent);
-      color: #000;
-      transition: background 0.3s ease, transform 0.1s ease;
+      transition: var(--transition);
     }
 
     button:hover {
-      background: var(--accent-hover);
-      transform: scale(1.02);
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      box-shadow: 0 4px 14px rgba(58, 125, 68, 0.18);
     }
 
     a {
       color: var(--accent);
-      text-decoration: none;
       font-weight: 500;
+      text-decoration: none;
+      transition: var(--transition);
     }
 
     a:hover {
-      text-decoration: underline;
+      color: var(--secondary);
     }
 
-    .muted {
+    small {
       font-size: 13px;
+      text-align: center;
       color: var(--muted);
-      margin-top: 10px;
-    }
-
-    .hidden {
-      display: none;
     }
 
     .status {
-      font-size: 13px;
-      margin-top: 8px;
+      padding: 10px;
+      border-radius: var(--radius);
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      display: none;
+    }
+
+    .status.success {
+      background: rgba(58, 125, 68, 0.1);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+
+    .status.error {
+      background: rgba(214, 69, 69, 0.1);
       color: var(--error);
+      border: 1px solid var(--error);
+    }
+
+    .timer {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
     }
 
     .fade-in {
-      animation: fadeIn 0.4s ease;
+      animation: fadeIn 0.3s ease forwards;
     }
 
     @keyframes fadeIn {
@@ -118,61 +155,139 @@
     }
   </style>
 </head>
+
 <body>
-  <div class="card fade-in" id="auth-card">
+  <div class="card">
     <h2 id="form-title">Sign In</h2>
 
-    <form id="login-form">
-      <input type="email" id="login-email" placeholder="Email" required />
-      <input type="password" id="login-password" placeholder="Password" required />
+    <!-- Login Form -->
+    <form id="login-form" class="fade-in">
+      <label>Email</label>
+      <input type="email" id="login-email" required placeholder="Enter your email">
+      <label>Password</label>
+      <input type="password" id="login-password" required placeholder="Enter your password">
       <button type="submit">Login</button>
-      <p class="muted">Need an account? <a href="#" id="create-link">Create one</a></p>
-      <p class="status" id="login-status"></p>
+      <small>Need an account? <a href="#" id="create-link">Create one</a></small>
     </form>
 
-    <form id="signup-form" class="hidden">
-      <div id="signup-step1">
-        <input type="email" id="signup-email" placeholder="Enter your email" required />
-        <button type="button" id="send-code-btn">Continue</button>
-      </div>
-
-      <div id="signup-step2" class="hidden">
-        <input type="text" id="verification-code" placeholder="Enter 6-digit code" maxlength="6" required />
-        <button type="button" id="verify-code-btn">Verify</button>
-        <p class="muted">Didn’t get the code? <a href="#" id="resend-code">Resend</a></p>
-      </div>
-
-      <div id="signup-step3" class="hidden">
-        <input type="password" id="signup-password" placeholder="Password" required />
-        <input type="password" id="confirm-password" placeholder="Confirm password" required />
-        <button type="button" id="create-account-btn">Create Account</button>
-      </div>
-
-      <p class="status" id="signup-status"></p>
-      <p class="muted"><a href="#" id="back-to-login">Back to login</a></p>
+    <!-- Signup Step 1: Email -->
+    <form id="signup-email-form" class="fade-in" style="display:none;">
+      <label>Email</label>
+      <input type="email" id="signup-email" required placeholder="Enter your email">
+      <button type="button" id="signup-email-btn">Continue</button>
     </form>
+
+    <!-- Signup Step 2: Verification -->
+    <form id="signup-code-form" class="fade-in" style="display:none;">
+      <label>Enter verification code</label>
+      <input type="number" id="signup-code" placeholder="6-digit code" required>
+      <div class="timer" id="timer">Code expires in 60s</div>
+      <button type="button" id="verify-code-btn">Verify</button>
+      <small><a href="#" id="resend-code">Resend code</a></small>
+    </form>
+
+    <!-- Signup Step 3: Password -->
+    <form id="signup-password-form" class="fade-in" style="display:none;">
+      <label>Password</label>
+      <input type="password" id="signup-password" required placeholder="Create a password">
+      <label>Confirm Password</label>
+      <input type="password" id="signup-confirm" required placeholder="Confirm password">
+      <button type="button" id="create-account-btn">Create Account</button>
+    </form>
+
+    <div id="status" class="status"></div>
   </div>
 
   <script>
     const loginForm = document.getElementById('login-form');
-    const signupForm = document.getElementById('signup-form');
+    const signupEmailForm = document.getElementById('signup-email-form');
+    const signupCodeForm = document.getElementById('signup-code-form');
+    const signupPasswordForm = document.getElementById('signup-password-form');
+    const statusBox = document.getElementById('status');
+    const title = document.getElementById('form-title');
+
     const createLink = document.getElementById('create-link');
-    const backToLogin = document.getElementById('back-to-login');
-    const formTitle = document.getElementById('form-title');
+    const verifyCodeBtn = document.getElementById('verify-code-btn');
+    const resendCode = document.getElementById('resend-code');
 
-    createLink.onclick = () => {
-      loginForm.classList.add('hidden');
-      signupForm.classList.remove('hidden');
-      formTitle.textContent = 'Create Account';
-    };
+    let verificationCode = null;
+    let timer;
+    let timeLeft = 60;
 
-    backToLogin.onclick = () => {
-      signupForm.classList.add('hidden');
-      loginForm.classList.remove('hidden');
-      formTitle.textContent = 'Sign In';
-    };
+    function showStatus(message, type = 'success') {
+      statusBox.textContent = message;
+      statusBox.className = `status ${type}`;
+      statusBox.style.display = 'block';
+      setTimeout(() => statusBox.style.display = 'none', 4000);
+    }
 
-    // Next phase: integrate Firebase Auth + code verification flow
+    createLink.addEventListener('click', () => {
+      loginForm.style.display = 'none';
+      signupEmailForm.style.display = 'flex';
+      title.textContent = "Create Account";
+    });
+
+    document.getElementById('signup-email-btn').addEventListener('click', () => {
+      const email = document.getElementById('signup-email').value;
+      if (!email || !email.includes('@')) return showStatus("Please enter a valid email", 'error');
+
+      verificationCode = Math.floor(100000 + Math.random() * 900000);
+      console.log("Verification code:", verificationCode); // demo
+      showStatus("Verification code sent to " + email, 'success');
+
+      signupEmailForm.style.display = 'none';
+      signupCodeForm.style.display = 'flex';
+
+      timeLeft = 60;
+      updateTimer();
+      timer = setInterval(() => {
+        timeLeft--;
+        updateTimer();
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          showStatus("Code expired. Please resend.", 'error');
+        }
+      }, 1000);
+    });
+
+    function updateTimer() {
+      document.getElementById('timer').textContent = `Code expires in ${timeLeft}s`;
+    }
+
+    verifyCodeBtn.addEventListener('click', () => {
+      const inputCode = document.getElementById('signup-code').value;
+      if (parseInt(inputCode) === verificationCode) {
+        clearInterval(timer);
+        showStatus("Email verified!", 'success');
+        signupCodeForm.style.display = 'none';
+        signupPasswordForm.style.display = 'flex';
+      } else {
+        showStatus("Invalid code. Try again.", 'error');
+      }
+    });
+
+    resendCode.addEventListener('click', () => {
+      verificationCode = Math.floor(100000 + Math.random() * 900000);
+      console.log("Resent code:", verificationCode);
+      showStatus("New code sent!", 'success');
+      timeLeft = 60;
+      updateTimer();
+    });
+
+    document.getElementById('create-account-btn').addEventListener('click', () => {
+      const pass = document.getElementById('signup-password').value;
+      const confirm = document.getElementById('signup-confirm').value;
+
+      if (pass.length < 8) return showStatus("Password must be at least 8 characters", 'error');
+      if (pass !== confirm) return showStatus("Passwords do not match", 'error');
+
+      showStatus("Account created successfully! Redirecting to login...", 'success');
+      setTimeout(() => {
+        signupPasswordForm.style.display = 'none';
+        loginForm.style.display = 'flex';
+        title.textContent = "Sign In";
+      }, 2000);
+    });
   </script>
 </body>
 </html>
