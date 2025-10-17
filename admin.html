@@ -1,57 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Edit NFC Profile</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin – Edit NFC Profile</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f3f4f6;
-      padding: 20px;
-      text-align: center;
-    }
-    form {
-      background: #fff;
-      border-radius: 10px;
-      padding: 20px;
-      max-width: 400px;
-      margin: 0 auto;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-    input, textarea {
-      width: 100%;
-      margin: 8px 0;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; background: #f5f5f5; }
+    h1 { text-align: center; }
+    input, textarea { width: 100%; padding: 10px; margin: 8px 0; border-radius: 5px; border: 1px solid #ccc; }
+    button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    #message { margin-top: 15px; text-align: center; font-weight: bold; }
   </style>
 </head>
 <body>
-  <h2>🛠️ Edit Your Profile</h2>
-  <form id="profileForm">
-    <input type="text" id="name" placeholder="Name" required />
-    <input type="text" id="bio" placeholder="Bio" required />
-    <input type="email" id="email" placeholder="Email" required />
-    <input type="text" id="phone" placeholder="Phone" required />
-    <input type="url" id="instagram" placeholder="Instagram URL" />
-    <input type="url" id="linkedin" placeholder="LinkedIn URL" />
-    <input type="url" id="photo" placeholder="Profile Photo URL (optional)" />
-    <button type="submit">Save Profile</button>
-  </form>
 
+  <h1>Edit NFC Profile</h1>
+
+  <label>Name:</label>
+  <input type="text" id="name">
+
+  <label>Bio:</label>
+  <textarea id="bio"></textarea>
+
+  <label>Email:</label>
+  <input type="text" id="email">
+
+  <label>Phone:</label>
+  <input type="text" id="phone">
+
+  <label>Instagram:</label>
+  <input type="text" id="instagram">
+
+  <label>LinkedIn:</label>
+  <input type="text" id="linkedin">
+
+  <button id="saveBtn">💾 Save Profile</button>
   <p id="message"></p>
 
   <script type="module">
@@ -70,34 +54,42 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const form = document.getElementById("profileForm");
-    const message = document.getElementById("message");
-
-    // Preload current data
     async function loadProfile() {
-      try {
-        const docRef = doc(db, "profiles", "test123");
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          document.getElementById("name").value = data.name || "";
-          document.getElementById("bio").value = data.bio || "";
-          document.getElementById("email").value = data.email || "";
-          document.getElementById("phone").value = data.phone || "";
-          document.getElementById("instagram").value = data.instagram || "";
-          document.getElementById("linkedin").value = data.linkedin || "";
-          document.getElementById("photo").value = data.photo || "";
-        }
-      } catch (e) {
-        message.innerText = "Error loading profile: " + e.message;
+      const docRef = doc(db, "profiles", "test123");
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        document.getElementById("name").value = data.name || "";
+        document.getElementById("bio").value = data.bio || "";
+        document.getElementById("email").value = data.email || "";
+        document.getElementById("phone").value = data.phone || "";
+        document.getElementById("instagram").value = data.instagram || "";
+        document.getElementById("linkedin").value = data.linkedin || "";
+      } else {
+        document.getElementById("message").innerText = "⚠️ Profile not found!";
       }
     }
 
-    // Save updates
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    document.getElementById("saveBtn").addEventListener("click", async () => {
+      const profileData = {
+        name: document.getElementById("name").value,
+        bio: document.getElementById("bio").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        instagram: document.getElementById("instagram").value,
+        linkedin: document.getElementById("linkedin").value
+      };
+
       try {
-        const profileData = {
-          name: document.getElementById("name").value,
-          bio: document.getElementById("bio").v
+        await setDoc(doc(db, "profiles", "test123"), profileData);
+        document.getElementById("message").innerText = "✅ Profile updated successfully!";
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        document.getElementById("message").innerText = "❌ Error updating profile. Check console.";
+      }
+    });
+
+    loadProfile();
+  </script>
+</body>
+</html>
