@@ -5,12 +5,12 @@
 
   // Initialize Firebase
   const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyDhTLZJJqFhf5KC9ocHSR1tmYdtjlQ0f6c",
+    authDomain: "nfc-digcard.firebaseapp.com",
+    projectId: "nfc-digcard",
+    storageBucket: "nfc-digcard.firebasestorage.app",
+    messagingSenderId: "521425518595",
+    appId: "1:521425518595:web:e69a27652dc9d4c90f4e36"
   };
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
