@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NFC Digital Card | Login</title>
+  <title>NFC Digital Card | Auth</title>
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg-color: #faf8f5; 
+      --bg-color: #faf8f5;
       --card-color: #ffffff;
       --text-color: #1f1f1f;
-      --accent-color: #c7a76c; /* warm sand gold */
+      --accent-color: #c8a97e; /* elegant sand gold */
       --muted-text: #7a7a7a;
       --error-color: #c74d4d;
       --success-color: #3b7b61;
@@ -56,7 +56,6 @@
       margin-bottom: 25px;
       color: var(--text-color);
       font-weight: 500;
-      letter-spacing: 0.3px;
       font-size: 1.4rem;
     }
 
@@ -112,13 +111,8 @@
       font-size: 14px;
     }
 
-    .error {
-      color: var(--error-color);
-    }
-
-    .success {
-      color: var(--success-color);
-    }
+    .error { color: var(--error-color); }
+    .success { color: var(--success-color); }
 
     .timer {
       font-size: 13px;
@@ -131,12 +125,10 @@
         padding: 30px 20px;
         border-radius: 16px;
       }
-
       h2 {
         font-size: 1.25rem;
         margin-bottom: 20px;
       }
-
       button, input {
         font-size: 13.5px;
       }
@@ -239,7 +231,7 @@
     document.getElementById('send-code-btn').onclick = () => {
       const email = document.getElementById('signup-email').value.trim();
       const msg = document.getElementById('email-message');
-      const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // ✅ FIXED REGEX
 
       if (!email || !emailRegex.test(email)) {
         msg.innerHTML = "<span class='error'>Please enter a valid email address.</span>";
@@ -309,12 +301,31 @@
         msg.innerHTML = "<span class='error'>Passwords do not match.</span>";
         return;
       }
-      msg.innerHTML = "<span class='success'>Account created successfully!</span>";
-      setTimeout(() => {
-        passwordSetupForm.style.display = 'none';
-        loginForm.style.display = 'block';
-        formTitle.innerText = 'Login';
-      }, 1000);
+
+      try {
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(verifiedEmail, pw);
+        msg.innerHTML = "<span class='success'>Account created successfully!</span>";
+        setTimeout(() => {
+          window.location.href = "profile.html";
+        }, 1000);
+      } catch (error) {
+        msg.innerHTML = `<span class='error'>${error.message}</span>`;
+      }
+    };
+
+    document.getElementById('login-btn').onclick = async () => {
+      const email = document.getElementById('login-email').value.trim();
+      const pw = document.getElementById('login-password').value.trim();
+      const msg = document.getElementById('login-message');
+      try {
+        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, pw);
+        msg.innerHTML = "<span class='success'>Login successful!</span>";
+        setTimeout(() => {
+          window.location.href = "profile.html";
+        }, 800);
+      } catch (error) {
+        msg.innerHTML = `<span class='error'>${error.message}</span>`;
+      }
     };
   </script>
 </body>
